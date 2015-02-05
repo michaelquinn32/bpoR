@@ -1,4 +1,4 @@
-%       File: final.rnw
+%       File: to_publish.Rnw
 %       Author: Michael Quinn
 %       Date Created: February 4, 2014
 %       
@@ -31,7 +31,7 @@
 
 \title{Bayesian Estimates of the Parameters for Portfolio Optimization}
 \date{\today}
-\author{Michael Quinn \\ The University of Illinois at Urbana-Champaign\footnote{A project repository is available on Github. This includes the original .Rnw file for generating this paper and supplementary \texttt{R} code used in this project. See here: .}}
+\author{Michael Quinn \\ The University of Illinois at Urbana-Champaign\footnote{A project repository is available on Github. This includes the original .Rnw file for generating this paper and supplementary \texttt{R} code used in this project. See here: \url{https://github.com/michaelquinn32/Bayesian_Pricing_Paper.}}}
 
 \begin{document}
 
@@ -108,7 +108,7 @@ eff.plot=function(eff, eff.optimal.point)
    y=eff.optimal.point$Exp.Return,
    label=paste("Risk: ",
    round(eff.optimal.point$Std.Dev*100, 
-         digits=3),"\nReturn: ",
+         digits=3),"%\nReturn: ",
    round(eff.optimal.point$Exp.Return*100, 
          digits=4),"%\nSharpe: ",
    round(eff.optimal.point$sharpe*100, 
@@ -504,11 +504,13 @@ Bayesian methods differ from frequentist statistical methods through the usage o
 
 Bayesian methods were previously limited in application because of the computational challenges they often pose. Thanks to powerful sampling techniques like Markov Chain Monte Carlo, this is no longer the case. Most statistical software can easily handle these sorts of problems. In this case, I will use \texttt{R}.\footnote{The original .Rnw file for generating this paper and the \texttt{R} code used in this project will be made available through Dropbox upon publication of the paper.}
 
+The examples in this paper highlight how Bayesian methods help analysts manage uncertainty and non-representative data. This is a problem faced by many investors in Central Asia, and the techniques described here could help overcome these challenges. A Bayesian framework can provide rigorous support to the heuristic judgment currently employed for making financial decisions, optimizing portfolios and reducing risks.
+
 Within this paper, three Gibbs samplers will be employed to estimate portfolio parameters. The first will use an unknown mean and known variance. It corresponds to an analyst not having reliable information about asset return, while keeping a sense of asset riskiness. The second will use an unknown mean and variance along with an uninformative prior. This corresponds to the analyst having limited to no information about the future of the market of the assets in her portfolio. Last, an informative prior will be used to estimate both mean and variance, incorporating an analyst's area knowledge about future possible outcomes.
 
 \section{Methodology}
 
-Several methodological issues need to be addressed. I'll begin with a discussion of portfolio allocation, following the optimization algorithm described by Constantinides \& Malliaris (1995) \cite{const95} and Zivot (2013) \cite{zivot13}. Next I'll address issues concerning the probability distributions of capital asset returns. I will follow that with a discussion the Gibbs sampler, which I rely on heavily for making Bayesian parameter estimates. Last, I'll highlight Monte Carlo techniques for validating results.
+Several methodological issues need to be addressed. I'll begin with a discussion of portfolio allocation, following the optimization algorithm described by Constantinides \& Malliaris (1995) \cite{const95} and Zivot (2013) \cite{zivot13}. Next I'll address issues concerning the probability distributions of capital asset returns. I will follow that with a discussion of the Gibbs sampler, which I rely on heavily for making Bayesian parameter estimates. Last, I'll highlight Monte Carlo techniques for validating results.
 
 \subsection{Optimal Portfolio Allocation}
 
@@ -552,7 +554,7 @@ The investor holds the portfolio over the limited time period. From this, the op
     & \mathbf{\omega}^T \mathbf{1} = 1
 \end{flalign}
 
-Where $\mathbf{1}$ is a vector of 1's with the same dimension as $\mathbf{\omega}$. In other words, the weights must always sum to 1. At the same time, the investor wishes to maximize returns while not exceeding a maximum acceptable level of risk $\sigma^{2*}$.
+Above, $\mathbf{1}$ is a vector of 1's with the same dimension as $\mathbf{\omega}$. In other words, the weights must always sum to 1. At the same time, the investor wishes to maximize returns while not exceeding a maximum acceptable level of risk $\sigma^{2*}$.
 
 \begin{flalign}
     \mathbf{\omega}^* = & \textrm{ max } \mu_p \notag \\     
@@ -572,7 +574,7 @@ The investor can add both risk and return up to his or her predefined \textit{ri
     \mathbf{D} \mathbf{z} = \mathbf{d}
 \end{flalign}
 
-Where,
+In the preceding formula,
 
 \begin{flalign}
     \mathbf{D} =
@@ -593,13 +595,13 @@ Where,
         \end{pmatrix}
 \end{flalign}
 
-With $\mathbf{\lambda}$ chosen to satisfy the following Lagrangian equation:
+The parameter $\mathbf{\lambda}$ is chosen to satisfy the following Lagrangian equation:
 
 \begin{flalign}
     L(\omega, \mathbf{\lambda}) = \mathbf{\omega}^T \mathbf{\sigma} \mathbf{\omega} - \mathbf{\lambda} \left( \mathbf{A} \mathbf{\omega} - \mathbf{b} \right)
 \end{flalign}
 
-The matrix $\mathbf{A} $ and vector $\mathbf{b}$ allow for the creation of the three constraints in this problem.
+The matrix $\mathbf{A} $ and vector $\mathbf{b}$ allow for the creation of the three constraints in this problem:
 
 \begin{itemize}
     \item The return of the portfolio must exceed the desired return at that risk level. This allows the solver to iterate over a range of possible returns and variances.
@@ -607,7 +609,7 @@ The matrix $\mathbf{A} $ and vector $\mathbf{b}$ allow for the creation of the t
     \item The weights must fall within -0.5 and 0.5.
 \end{itemize}
 
-I implemented this problem in \texttt{R} using the \texttt{quadprog} package and the example of Matuszak (2013).\cite{matu13} With a loop, you can generate an efficient portfolio across a range of risk levels. The result is the following efficient frontier (see Figure~\ref{fig:frontier}), and I've included a basic one below. It what chosen using the basic method of calculating means and variances from the last three months of weekly returns. As a rule of thumb, most analysts select the portfolio with the highest Sharpe ratio.
+I implemented this problem in \texttt{R} using the \texttt{quadprog} package and the example of Matuszak (2013).\cite{matu13} With a loop, you can generate an efficient portfolio across a range of risk levels. The result is the following efficient frontier (see Figure~\ref{fig:frontier}), and I've included a basic one below. This plot illustrates the trade-off between risk (the portfolio's standard deviation) and return in a given portfolio. It was chosen using the basic method of calculating means and variances from the last three months of weekly returns (see section 3 for the particular assets). While every asset allocation along the frontier can be considered optimal, most analysts select the portfolio with the highest Sharpe ratio as a rule of thumb.
 
 \begin{figure}[H]
     \centering
@@ -638,20 +640,20 @@ As mentioned above, this is the simulation distribution of our asset returns. Th
     p(\mathbf{y}|\mathbf{\mu},\mathbf{\Sigma}) \propto |\mathbf{\Sigma}|^{-1/2} \exp \left(- \frac{1}{2} \left( \mathbf{y} - \mathbf{\mu} \right)^T \mathbf{\Sigma}^{-1} \left( \mathbf{y} - \mathbf{\mu} \right)  \right)
 \end{flalign}
 
-For $n$ i.i.d. observations, the likelihood is 
+For $n$ independently and identically distributed (i.i.d.) observations, the likelihood is 
 
 \begin{flalign}
     p(\mathbf{y}_1, \dots, \mathbf{y}_n |\mathbf{\mu},\mathbf{\Sigma}) \propto |\mathbf{\Sigma}|^{-n/2} \exp \left(- \frac{1}{2} \textrm{tr} \left( \mathbf{\Sigma}^{-1} \mathbf{S}_0 \right)  \right)    
 \end{flalign}
 
-Where $\mathbf{S}_0$ is the sum of squares matrix relative to $\mathbf{\mu}$.
+$\mathbf{S}_0$ is the sum of squares matrix relative to $\mathbf{\mu}$ and is defined thusly,
 
 \begin{flalign}
     \mathbf{S}_0 = \sum_{i=1}^{n}(\mathbf{y}_i - \mathbf{\mu})(\mathbf{y}_i - \mathbf{\mu})^T
     \label{}
 \end{flalign}
 
-When variance is known, the \textit{posterior distribution for $\mu$ with known $\Sigma$} is as follows
+When variance is known, the \textit{posterior distribution for $\mu$ with known $\mathbf{\Sigma}$} is as follows,
 
 \begin{flalign}
     p(\mathbf{\mu}| \mathbf{y} \mathbf{\Sigma}) & \propto \exp \left( -\frac{1}{2} \left( \mathbf{\mu} - \mathbf{\mu}_n \right)^T \mathbf{\Lambda}_n^{-1} \left( \mathbf{\mu} - \mathbf{\mu}_n \right) \right) \notag \\
@@ -659,23 +661,23 @@ When variance is known, the \textit{posterior distribution for $\mu$ with known 
     \label{}
 \end{flalign}
 
-The precision matrix $\mathbf{\Lambda}$ and the parameterized version of $\mathbf{\mu}_n$ are as follows:
+The precision matrix $\mathbf{\Lambda}$ is the inverse of the covariance, and is easier to work with in certain distributions. I will define it and the parameterized version of $\mathbf{\mu}_n$ as follows,
 
 \begin{flalign}
     \mathbf{\mu}_n & = \left( \mathbf{\Lambda}_0^{-1} + n \mathbf{\Sigma}^{-1} \right)^{-1} \left( \mathbf{\Lambda}_0^{-1} \mathbf{\mu}_0 + n \mathbf{\Sigma}^{-1} \bar{y} \right) \notag \\
     \mathbf{\Lambda}^{-1} & = \mathbf{\Lambda}_0^{-1} + n \mathbf{\Sigma}^{-1}
 \end{flalign}
 
-Where $\mathbf{\mu}_0$ and $\mathbf{\Lambda}_0$ the prior mean vector and variance matrix for the conjugate prior distribution of $\mathbf{\mu} \sim N(\mathbf{\mu}_0, \mathbf{\Lambda}_0)$. $\mathbf{\Sigma}$ is the sample variance and $\bar{y}$ is the sample mean.
+where $\mathbf{\mu}_0$ and $\mathbf{\Lambda}_0$ are the prior mean vector and variance matrix for the conjugate prior distribution of $\mathbf{\mu} \sim N(\mathbf{\mu}_0, \mathbf{\Lambda}_0)$. $\mathbf{\Sigma}$ is the sample variance and $\bar{y}$ is the sample mean.
 
-For sampling purposes it is usually easier to work with the posterior conditional marginal distributions of subvectors of $\mathbf{\mu} $ with a known variance. Let the index $(-1)$ or $(-1,-1)$ indicate the absence of item 1 from the vector of means or matrix of variances. Then appropriate conditional and marginal distributions are:
+For sampling purposes it is usually easier to work with the posterior conditional marginal distributions of subvectors of $\mathbf{\mu} $ with a known variance. Let the index $(-1)$ or $(-1,-1)$ indicate the absence of an element with the index $(1)$ or $(1,1)$ from the vector of means or matrix of variances. Then appropriate conditional and marginal distributions are,
 
 \begin{flalign}
     \mu^{(1)}|\mathbf{\mu}^{(-1)}, \mathbf{y} \sim N\left( \mu_n^{(1)} + \beta^{1|2}\left( \mathbf{\mu}^{(-1)} - \mathbf{\mu}_n^{(-1)} \right), \mathbf{\Lambda}^{1|2} \right)
     \label{}
 \end{flalign}
 
-Where the regression coefficient $\beta^{1|2}$ and the conditional variance matrix $\mathbf{\Lambda}^{1|2}$ are defined as follows.
+The regression coefficient $\beta^{1|2}$ and the conditional variance matrix $\mathbf{\Lambda}^{1|2}$ are defined as follows,
 
 \begin{flalign}
     \beta^{1|2} & = \mathbf{\Lambda}_n^{(-1,1)} \left( \mathbf{\Lambda}_n^{(-1,-1)} \right)^{-1} \notag \\
@@ -691,7 +693,9 @@ As it turns out, setting up the multivariate normal distribution with both an un
     \label{}
 \end{flalign}
 
-The parameters $v_0$ and $\mathbf{\Lambda}_0$ are the degrees of freedom and the scale matrix for the inverse-Wishart distribution. Using \texttt{R}, this distribution is available as a part of the \texttt{MCMC} package. In the distribution for the mean, $\kappa_0$ is the prior number of measurements used to calculate the mean.
+The parameter $v_0$ is the number of degrees of freedom, and $\mathbf{\Lambda}_0$ is the scale matrix for the inverse-Wishart distribution.\footnote{Given a standard multivariate-normally distributed matrix $\mathbf{Z} \sim N(\mathbf{0}, \mathbf{\Sigma})$, a variable $\mathbf{W} = \mathbf{Z}^T \mathbf{Z}$ follows a Wishart distribution. In that sense, it is a multivariate generalization of the Chi-square distribution. If $\mathbf{W}$ follows a Wishart distribution, $\mathbf{S} = \mathbf{W}^{-1}$ follows the inverse Wishart distribution.} This is the final element we need in our algorithm create random matrices that follow multivariate normal distribution.
+
+Using \texttt{R}, this distribution is available as a part of the \texttt{MCMC} package. In the distribution for the mean, $\kappa_0$ is the prior number of measurements used to calculate the mean.
 
 From the prior density and the normal likelihood, we derive the following set of parameters.
 
@@ -709,16 +713,16 @@ Sampling from this distribution occurs iteratively over two steps.
     \item Then, sample $\mathbf{\mu}|\mathbf{\Sigma},\mathbf{y}  \sim N\left( \mu_n, \mathbf{\Sigma}/\kappa_n  \right)$
 \end{itemize}
 
-If, instead, we are interested in employing a non-informative prior, the process only needs a few small adjustments.
+If, instead, we want to employ a non-informative prior, the process only needs a few small adjustments.
 
 \begin{itemize}
     \item First, sample $\mathbf{\sigma}|\mathbf{y} \sim \textrm{ Inv-Wishart}_{n-1}\left( \mathbf{S} \right)$
-    \item Then, sample $\mathbf{\mu}|\mathbf{\Sigma},\mathbf{y}  \sim N\left( \bar{y}, \mathbf{\Sigma}/n  \right)$
+    \item Then sample $\mathbf{\mu}|\mathbf{\Sigma},\mathbf{y}  \sim N\left( \bar{y}, \mathbf{\Sigma}/n  \right)$
 \end{itemize}
 
 \subsection{Gibbs Sampling Algorithms}
 
-A Gibbs sampler is a class of Markov Chain Monte Carlo (MCMC) that utilizes conditional probability distributions (German and German, 1984).\cite{german84} This is an important feature when we have distributions similar to the ones described above. In each of the three sampling cases, we will be working with marginal distributions that are conditioned on other parameters. In the case of the unknown variance, we condition on the other means. In the case of where both means and variances are unknown, we condition the variance on the data and the mean on the variance.
+A Gibbs sampler is a class of Markov Chain Monte Carlo (MCMC) that utilizes conditional probability distributions (German and German, 1984).\cite{german84} This is an important feature when we have distributions similar to the ones described above. In each of the three sampling cases, we will be working with marginal distributions that are conditioned on other parameters. In the case of the unknown variance, we condition on the other means. When the means and the variances are unknown, we condition the variance on the data and the mean on the variance.
 
 In general, the Gibbs sampling algorithm is as follows. Suppose that $x$ is a vector of random variables, and $x = \left( x_1, \dots , x_d \right)$, and let $x_{[-A]}$ be ${x, j \in A^c}$ for any subset $A$ of the coordinates. The sample will ``update'' iteratively, so that at time $t+1$ you will have $x^{(t)} = \left( x_1^{(t)}, \dots , x_d^{(t)} \right)$.
 
@@ -740,13 +744,13 @@ In general, the Gibbs sampling algorithm is as follows. Suppose that $x$ is a ve
     \item Keep plugging in the conditional samples for each $i=1, \dots d$ until you get your sample.
 \end{itemize}
 
-All of the samples created with the Gibbs algorithm have 10,000 observations. Each was constructed using a burn-in period of 5,000 observations. This initial set of observations was thrown out to make sure that the algorithm had already converged.
+All samples created with the Gibbs algorithm have 10,000 observations. Each was constructed using a burn-in period of 5,000 observations. This initial set of observations was thrown out to make sure that the algorithm had already converged.
 
 \subsection{Validating Outcomes}
 
-The same Monte Carlo techniques used to estimate the parameters for the Bayesian portfolios can also be used for validating the results. By simulating possible returns for each of the assets in the portfolio and the market as a whole, we can gain a sense of the frequency with which each individual portfolio will outperform the market. This is another performance dimension not fully captured by the Sharpe ratio alone.
+The same Monte Carlo techniques used to estimate the parameters for the Bayesian portfolios can also be used for validating the results. By simulating possible returns for each asset in the portfolio and the market as a whole, we can gain a sense of the frequency with which each individual portfolio will outperform the market. This is another performance dimension not fully captured by the Sharpe ratio.
 
-As was mentioned above, returns are considered multivariate normal. Means and variances for the individual assets and the market index were calculated for 01-09-2012 to 12-30-2013, and 50,000 matrices consisting of 104 weeks of returns were simulated. With these simulated returns, I estimated the probabilities using a multivariate normal distribution. This is relatively easy, since you can just treat the variables like bivariate normals.
+While there is only market history to build our model on, alternative histories can be simulated. To do this, I calculated means and variances for the individual assets and the market index for 01-09-2012 to 12-30-2013. From there, 50,000 matrices consisting of 104 weeks of returns were simulated. With these new returns, I estimated the probabilities that our portfolio outperformed the market using a multivariate normal distribution. This is relatively easy, since you can just treat the variables like bivariate normals.
 
 \begin{flalign}
 P(X > Y) & = P (Y - X < 0) \notag \\
@@ -754,19 +758,19 @@ W & = Y - X \notag \\
 W & \sim N(\mu_Y - \mu_X, \sigma_Y^2 + \sigma_X^2 - 2 \sigma_X \sigma_Y)
 \end{flalign}
 
-Using these simulated results, we can also assess the individual asset contribution to the total return. A well-designed and robust portfolio should generate returns across many different assets over an extended period. Otherwise, a particular outcome may have more to do with a particular market outcome. Given an $m$ by $n$ matrix of returns $\mathbf{X}$, where $m$ equals the periods in the simulation and $n$ is the number of assets, the vector of asset contributions $\mathbf{C}$ can be calculated as follows.
+Using these simulated results, we can also assess the individual asset contribution to the total return. A well-designed and robust portfolio should generate returns across many different assets over an extended period. Otherwise, a particular portfolio outcome may have more to do with a particular market outcome than with our asset allocation. Given an $m$ by $n$ matrix of returns $\mathbf{X}$, where $m$ equals the periods in the simulation and $n$ is the number of assets, the vector of asset contributions $\mathbf{C}$ can be calculated as follows.
 
 \begin{flalign}
   \mathbf{C} & = \frac{1}{\mu_p} \mathrm{D}(\mathbf{\omega_p}) \mathbf{X}^T \mathbf{1}_n
 \end{flalign}
 
-Where $\mu_p$ is the total return for a given portfolio, and $\mathrm{D}(\mathbf{\omega_p})$ is a diagonal matrix constructed from the corresponding asset weights. Ultimately, this amounts to the weighted column sums divided by their sum, i.e. a relatively simple proportion, which is calculated for each individual portfolio
+In the preceding formula, $\mu_p$ is the total return for a given portfolio, and $\mathrm{D}(\mathbf{\omega_p})$ is a diagonal matrix constructed from the corresponding asset weights. Ultimately, this amounts to the weighted column sums divided by their sum, i.e. a relatively simple proportion, which is calculated for each portfolio.
 
-For the sake of interpretation, I index returns at 1 in this paper when discussing portfolio performance over a given period. In other words, all time series start at one instead of zero. This needs to be avoided here for obvious reasons. If contribution for each asset is a portion of the total return, indexing at one will bias all of these ratios.
+For the sake of interpretation, I index returns at 1 in this paper when discussing portfolio performance over a given period. In other words, all time series start at one instead of zero. But for these calculations, this indexing needs to be removed. If contribution for each asset is a portion of the total return, indexing at one will bias all of these ratios.
 
 Last but not least, this contribution can be found for each simulation, which we can average for the final analysis. Moreover, we can find the stability of these contributions by looking at their variance. Under normal market conditions, we'd like to see somewhat evenly divided positive contributions with low variance for each asset. 
 
-In particular, extremely large negative contributions indicate a misallocation. While small losses might occur from hedging within a diversified portfolio, large losses on certain assets in favor of massive returns on other assets is the equivalent leveraging. This strategy is inherently risky and runs against the intuition of diversification. In fact this is the opposite; the analyst is making a large bet that only a portion of her chosen assets will perform well. She is putting all of her eggs in one basket.
+In particular, extremely large negative contributions indicate a misallocation. While small losses might occur from hedging within a diversified portfolio, large losses on certain assets in favor of massive returns on other assets is the equivalent leveraging. This strategy is risky and runs against the intuition of diversification. In fact this is the opposite. The analyst is making a large bet that only a portion of her chosen assets will perform well. She is putting all of her eggs in one basket.
 
 \section{A Motivating Example}
 
@@ -783,14 +787,14 @@ ggplot(hist.plot,aes(x=Date,y=value, group=variable,colour=variable)) +
     \label{fig:sixmonth}
 \end{figure}
 
-For illustrative purposes, consider the case of a hypothetical financial analyst at the end of 2011. The last year has been pretty rough, especially the last six months. High amounts of volatility in the market were matched with low returns, which usually equals bad showings for many fund managers. See Figure~\ref{fig:sixmonth}. Nonetheless, with the beginning of the new year, most analysts' spirits are up. There is broad consensus in future stock growth. This turns out to be correct, as the last few years have witnessed one of the strongest bull markets in recent history.
+Consider the case of a hypothetical financial analyst at the end of 2011. The last year has been pretty rough, especially the last six months. High volatility in the market was matched with low returns, and many fund managers perform poorly in this sort of environment. See Figure~\ref{fig:sixmonth}. Nonetheless, with the beginning of the new year, there is broad consensus in future stock growth. This turns out to be correct, as the last few years have witnessed one of the strongest bull markets in recent history.
 
-Our analyst downloads the previous year's weekly return data from \textit{Yahoo Finance} using the \texttt{stockPortfolio} package in \texttt{R}. She also has access on stock prices for most publicly assets dating back as far as ten years. She believes that while the \textit{Yahoo Finance} data is more relevant to current market conditions, the older stock performance reports might minimize noise and have a better sense of ``long-term'' trends for these companies.
+Our analyst downloads the previous year's weekly return data from \textit{Yahoo Finance} using the \texttt{stockPortfolio} package in \texttt{R}. She also has access on stock prices for most publicly traded assets dating back as far as 10 years. She believes that while the \textit{Yahoo Finance} data are more relevant to current market conditions, the older stock performance reports might minimize noise and has a better sense of ``long-term'' trends for these companies.
 
 Given this environment, our analyst would like to build a new portfolio consisting of the following assets:
 
 \begin{itemize}
-    \item \texttt{FOX}: 21st Century Fox, Inc., the media holding company that that includes stakes in film, television and satellite companies. It was formed during the recent Newscorp split, but has a ticker tape dating back to 1996.
+    \item \texttt{FOX}: 21st Century Fox, Inc., the media holding company that includes stakes in film, television and satellite companies. It was formed during the Newscorp split, but has a ticker tape dating back to 1996.
     \item \texttt{MSFT}: Microsoft Corporation, the technology and consumer goods company.
     \item \texttt{MMM}: The 3M Company, a conglomerate that produces a wide array of consumer goods.
     \item \texttt{HSY}: The Hershey Company, a producer of candies and other foods.
@@ -800,7 +804,7 @@ Given this environment, our analyst would like to build a new portfolio consisti
     \item \texttt{SHY}: iShares Barclay's 1-3 Treasury Bond Fund, a proxy for a risk-free asset.
 \end{itemize}
 
-The performance of each of these assets is summarized in Table~\ref{tab:returns}, which shows annualized mean returns and annualized standard deviations. It also shows each asset's annualized Sharpe Ratio, which is the asset's expected return divided by its standard deviation. The relatively high frequency of Sharpe ratios with a value less than one is an indicator of difficult market conditions. It also tends to be a sign of market turbulence when the risk-free asset has the highest Sharpe ratio. 
+The performance of each of these assets is summarized in Table~\ref{tab:returns}, which shows annualized mean returns and annualized standard deviations. It also shows each asset's annualized Sharpe Ratio. The relatively high frequency of Sharpe ratios with a value less than one indicates difficult market conditions. It also tends to be a sign of market turbulence when the risk-free asset has the highest Sharpe ratio. 
 
 \begin{table}
     \centering
@@ -821,23 +825,21 @@ Annualized Return & 34.03 & -0.48 & -25.81 & 22.45 & 5.25 & 23.97 & -33.45 & 0.9
 
 Our analyst believes that this is a somewhat representative portfolio for the American economy as a whole, providing a good opportunity for diversification. But it's also worth acknowledging that even this selection of assets is significantly smaller than an index like the \texttt{S\&P 500} or the \texttt{Dow Jones Industrial Average}. She will use the former as a benchmark for portfolio performance.
 
-Using this data, she builds a naive Markowitz portfolio. She only uses the previous six months' means and variances. Unfortunately, this portfolio performs terribly over the next two years. The previous six months hardly resembled the emerging bull market.\footnote{Based on weekly returns from 01-09-2012 to 12-30-2013.} The analyst's basic portfolio had an annualized return of only 7.45\%, and an annualized standard deviation of 15.72\%. On the other hand the market (as shown by the returns to the \texttt{S\&P 500}) had an annualized return of 19.08\% and an annualized standard deviation of only 10.93\%. The market's Sharpe ratio was more than three times that of the analyst's portfolio (see Table~\ref{tab:results}).
+Using these data, she builds a naive Markowitz portfolio. She only uses the previous six months' means and variances. Unfortunately, this portfolio performs terribly over the next two years. The previous six months hardly resembled the emerging bull market.\footnote{Based on weekly returns from 01-09-2012 to 12-30-2013.} The analyst's basic portfolio had an annualized return of only 7.45\%, and an annualized standard deviation of 15.72\%. On the other hand the market (as shown by the returns to the \texttt{S\&P 500}) had an annualized return of 19.08\% and an annualized standard deviation of only 10.93\%. The market's Sharpe ratio was more than three times that of the analyst's portfolio (see Table~\ref{tab:results}).
 
-While this is discouraging, it does not necessarily discredit the theory. Lets pose a counterfactual: what if the analyst actually had perfect insight and could predict each asset's mean and variance over the next two years? With these impossible advantages, the Markowitz model performs dramatically better. It significantly reduces portfolio risk, and only slightly under-performs the market in absolute terms. This ``perfect insight'' portfolio has a Sharpe ratio 271.11\%. This is obviously a sharp departure from reality, but it does provide a road towards improving the performance of the portfolio. 
+While this is discouraging, it does not necessarily discredit the theory. Let's pose a counterfactual. What if the analyst had perfect foresight and could predict each asset's mean and variance over the next two years? With these impossible advantages, the Markowitz model performs dramatically better. It significantly reduces portfolio risk, and only slightly under-performs the market in absolute terms. This ``perfect foresight'' portfolio has a Sharpe ratio 271.11\%. This is obviously a sharp departure from reality, but it does provide a road towards improving the performance of the portfolio. 
 
-Returning to the original formulation of the problem, the analyst has two pieces of information that are not incorporated to the basic estimates of parameters for the Markowitz model. There is general consensus that the market is due to improve, and the analyst has extensive historical data to provide context for recent returns. Her Bayesian prior, in the most general sense, is a composite of these two pieces of information. This is not perfectly useful, but it should be considered when constructing her portfolio. It certainly has the potential to improve over the basic portfolio's poor performance.
+Returning to the original formulation of the problem, the analyst has two pieces of information that are not incorporated into the basic estimates of parameters for the Markowitz model. There is general consensus that the market is due to improve, and the analyst has extensive historical data to provide context for recent returns. Her Bayesian prior, in the most general sense, is a composite of these two pieces of information. This is not perfectly useful, but it should be considered when constructing her portfolio. It certainly has the potential to improve over the basic portfolio's poor performance.
 
 \section{Results}
 
-Ultimately, improving portfolio performance comes down to improving estimates of parameters. Three alternative methods for generating these estimates are considered: a scenario where only the mean is unknown, a scenario where both parameters are unknown but the prior distribution is not informative, and a scenario where the prior is informative.
+Ultimately, improving portfolio performance comes down to improving estimates of parameters. Three scenarios are considered: only the mean is unknown, both parameters are unknown but the prior distribution is not informative, and the prior is informative.
 
-Even under the noninformative conditions, I included a upward adjustment in means of 20\% for the priors. This is meant to capture the general consensus that market conditions will improve over the next two years. While space doesn't allow for any validations of these results, the Appendix demonstrates some simulations of returns using each of the portfolios. 
+Even under the noninformative conditions, I included an upward adjustment in means of 20\% for the priors. This is meant to capture the general consensus that market conditions will improve over the next two years. While space doesn't allow for validating the prior,\footnote{It's also not realistic. In practice the priors are set before developing the statistical model. If the results are poor, you simply set a better informed prior next time. We can't repeat history.} the Appendix demonstrates some simulations of returns using each of the portfolios. 
 
 The annualized expected returns, standard deviations and Sharpe ratios for each of the portfolios in the project are included in Table~\ref{tab:results}. These results are found by applying the weights shown in Table~\ref{tab:weights} to the asset returns from 01-09-2012 to 12-30-2013. The weights give a good indication of which model portfolios hew closely to the parameters derived from the six months' of data available to the analyst. This can be found by simply comparing asset allocations.
 
 \subsection{Bayesian Portfolios}
-
-
 
 \begin{table}
     \centering
@@ -847,13 +849,13 @@ The annualized expected returns, standard deviations and Sharpe ratios for each 
   \hline
 Market & 19.08 & 10.93 & 174.60\\ 
   Basic & 7.45 & 15.72 & 47.40 \\ 
-  Insight & 15.67 & 5.78 & 271.11 \\ 
+  Foresight & 15.67 & 5.78 & 271.11 \\ 
   Unknown Mean & 8.50 & 13.76 & 61.76 \\ 
   Noninformative Prior & 7.46 & 15.66 & 47.62 \\ 
   Informative Prior & 32.10 & 14.04 & 228.65 \\ 
    \hline
 \end{tabular}
-    \caption{Annualized portfolio return and risk profiles for each of the estimation methods considered. The final three portfolios utilize Bayesian estimates.}
+    \caption{Annualized portfolio return and risk profiles for each of the estimation methods considered. The final three portfolios use Bayesian estimates.}
     \label{tab:results}
 \end{table}
 
@@ -865,22 +867,22 @@ Market & 19.08 & 10.93 & 174.60\\
  & FOX & MSFT & MMM & HSY & GE & GOOGL & AMZN & SHY \\ 
   \hline
 Baseline & 25.12 & 45.08 & -50.00 & 50.00 & -12.09 & 27.90 & -36.01 & 50.00 \\ 
-  Insight & 11.40 & 0.89 & 19.39 & 16.76 & -2.91 & 3.88 & 0.59 & 50.00 \\ 
+  Foresight & 11.40 & 0.89 & 19.39 & 16.76 & -2.91 & 3.88 & 0.59 & 50.00 \\ 
   Unknown Mean & 19.48 & 39.83 & -37.24 & 46.95 & -15.75 & 26.08 & -29.36 & 50.00 \\ 
   Noninformative Prior & 24.93 & 45.20 & -50.00 & 50.00 & -11.92 & 27.44 & -35.65 & 50.00 \\ 
   Informative Prior & 14.81 & 11.19 & 13.11 & 5.93 & 15.24 & 17.47 & 22.26 & -0.02 \\ 
    \hline
 \end{tabular}%
     }
-    \caption{Asset allocations for each of the portfolios in this project. The final three portfolios utilize Bayesian methods.}
+    \caption{Asset allocations for each of the portfolios in this project. The final three portfolios use Bayesian methods.}
     \label{tab:weights}
 \end{table}
 
-From the very beginning, we can get a sense of the factors contributing to the different performances of the basic and insight models. The latter has one asset that suffers from an extreme allocation, while the baseline model has three in addition to another model that is quite close to the limit. Financial theory generally predicts that portfolio performance improves with diversification, all other things considered. Avoiding extreme allocations would be a plus.
+From the very beginning, we can get a sense of the factors contributing to the different performances of the basic and insight models. The latter has one asset that suffers from an extreme allocation, while the baseline model has three in addition to another model that is quite close to the limit. Financial theory generally predicts that portfolio performance improves with diversification, all other things being equal. Avoiding extreme allocations would be a plus.
 
 As an alternative model, the first Bayesian portfolio was generated using an unknown mean but a known variance. From the analyst's perspective, this is akin to the assumption that while returns over the last six month were clearly not representative, overall market variation was not extremely atypical. This attitude is supported in the literature, which notes that mean estimates have a much stronger effect on the Markowitz model than variance estimates.
 
-Following the model set out by Gelman, the unknown mean model returns a parameter that is hardly distinguishable from that of the basic Markowitz model. This is a good thing in most circumstances, but not a particular benefit here. Rachev suggests solving this issue by readjusting weights on the prior and the data based on investor confidence, but since there are other estimation options available here, I just moved on.
+Following the model set out by Gelman, \cite{gelman13} the unknown mean model returns a parameter that is hardly distinguishable from that of the basic Markowitz model. This is a good thing in most circumstances, but not a particular benefit here. Rachev suggests solving this issue by readjusting weights on the prior and the data based on investor confidence. \cite{rachev08} Since other estimation options are available here, I just moved on.
 
 \begin{figure}[t]
     \centering
@@ -888,7 +890,7 @@ Following the model set out by Gelman, the unknown mean model returns a paramete
 ggplot(ret.out, aes(x=Date,y=value, group=variable, colour =variable)) + 
   geom_line() + scale_colour_discrete(name="Test Portfolio",
                        labels=c("Market","Unknown Mean", "NonInformative Prior",
-                                "Informative Prior", "Baseline","Insight")) +
+                                "Informative Prior", "Baseline","Foresight")) +
   ggtitle("Cumulative Returns for Portfolios") +
   theme(legend.position="bottom") + guides(col = guide_legend(nrow = 2)) +
   labs(y="Cumulative Return")
@@ -897,11 +899,11 @@ ggplot(ret.out, aes(x=Date,y=value, group=variable, colour =variable)) +
     \label{fig:cumret}
 \end{figure}
 
-The same issues appeared with a the model relying on a noninformative prior. Once again, this should be expected given the mathematical and theoretical basis of noninformative priors, but this is not the result that we desired. Moreover, little can be done to add a subjective ``correction'' to the model or gain any benefit from general analyst knowledge. Strictly speaking, that is the whole point of a noninformative prior. 
+The same issues appeared with the model relying on a noninformative prior. Once again, this should be expected given the mathematical and theoretical basis of noninformative priors, but this is not the desired result. Moreover, little can be done to add a subjective ``correction'' to the model or gain any benefit from general knowledge. Strictly speaking, that is the point of a noninformative prior. 
 
 On the other hand, real improvements are achieved by applying analysts' prediction of growth and the full weight of preexisting knowledge through the long-term asset means and variances. Furthermore, we can diminish the problematic effects of recent data by weighting the model parameters using the much larger number of observations in these historical estimates.
 
-While the final Bayesian model still does not outperform the insight portfolio in terms of Sharpe ratio, it has a much higher return. In fact, it is the only portfolio that outperforms the market index in absolute terms. The performance is achieved by acquiring much has risk, an appropriate response during a period of high returns. Nonetheless, this portfolio retains a much higher Sharpe ratio than market. Either way, this portfolio is better.
+While the final Bayesian model still does not outperform the foresight portfolio in terms of Sharpe ratio, it has a much higher return. In fact, it is the only portfolio that outperforms the market index in absolute terms. The performance is achieved by acquiring much higher risk, an appropriate response during a period of high returns. Nonetheless, this portfolio retains a much higher Sharpe ratio than market. Either way, this portfolio is better.
 
 The gains in performance come through avoiding extreme allocations while favoring generally risky assets over the safer risk-free asset. In fact, this is the only portfolio that does not take the maximum allocation possible for the risk-free asset. Although the risk-free asset had the highest Sharpe ratio during the six months of data available to the analyst, this is not the general case. It certainly wasn't true for the following two years (see Table~\ref{tab:test}), and it is not sound financial thinking to favor risk-free assets during bull markets.
 
@@ -924,7 +926,7 @@ Annualized Return & 0.40 & 0.20 & 0.29 & 0.27 & 0.25 & 0.30 & 0.43 & 0.00 \\
 
 \subsection{Validation}
 
-Sharpe ratios are a useful tool for assessing overall performance, but they aren't the only tool available. When looking at these ratios, it's worthwhile to keep in mind that a single market outcome is not very generalizable and previous market performance is not a guarantee for future performance. More intuitively, this is an issue of simulation. We can't observe more than one stock market, but we can at least generate possible market outcomes given a set of parameters.
+Sharpe ratios are a useful tool for assessing overall performance, but they aren't the only tool available. When looking at these ratios, it's worthwhile to keep in mind that a single market outcome is not generalizable and previous market performance is not a guarantee for future performance. More intuitively, this is an issue of simulation. We can't observe more than one stock market, but we can at least generate possible market outcomes given a set of parameters.
 
 \begin{table}
     \centering
@@ -944,7 +946,7 @@ Baseline & 1.15 & 0.22 & 0.19 \\
     \label{tab:simulations}
 \end{table}
 
-If the underlying assumptions given the normality of the returns is correct, the informative prior will outperform the market 98.93\% of the time over this investment horizon. This is much better than the probability of the portfolio with future insight beating the market. That said, the much higher returns of the informative prior come through the willingness to accept a much higher amount of risk.
+If the underlying assumptions given the normality of the returns is correct, the informative prior will outperform the market 98.93\% of the time over this investment horizon. This is much better than the probability of the portfolio with foresight beating the market. That said, the much higher returns of the informative prior come through the willingness to accept more risk.
 
 We can visualize these relationships with a series of plots. Overlays of the distributions are nice in that they allow for easy comparisons of the portfolio and the market. In particular, since the distributions are all roughly normal, overlays allow for easy comparisons of center and spread. On the other hand, the overlays cannot give a sense of the correlation between the two distributions and the final calculation of inequalities within the probability statements. See Figure~\ref{fig:probsinform} for the distribution plots for the Bayesian portfolio with an informative prior.
 
@@ -966,11 +968,11 @@ ggplot(plots, aes(x=value, fill=Var2)) +
   ggtitle("Densities") + 
   theme(legend.position="bottom")
 @
-\caption{On the left: a joint density plot for the market index and the Bayesian portfolio with an informative prior. Contour lines and annotation for where $Y > X$ are included. On the right: an overlay of the two densities.}
+\caption{On the left: A joint density plot for the market index and the Bayesian portfolio with an informative prior. Contour lines and annotation for where $Y > X$ are included. On the right: An overlay of the two densities.}
 \label{fig:probsinform}
 \end{figure}
 
-One question remains about these results? What drives this improved performance? If we're interested in generalizability, it would be worrisome if these results came through the performance of only a single asset. To be blunt, it would be the result of luck, not improved analytic techniques.
+One question remains about these results: What drives this improved performance? If we're interested in generalizability, it would be worrisome if these results came through the performance of only a single asset. To be blunt, it would be the result of luck, not improved analytic techniques.
 
 \begin{table}[ht]
 \centering
@@ -980,7 +982,7 @@ One question remains about these results? What drives this improved performance?
  & AMZN & FOX & GE & GOOGL & HSY & MMM & MSFT & SHY \\ 
   \hline
 Baseline & 8.96 & -2.79 & 1.16 & -2.80 & -4.24 & 4.56 & -3.82 & -0.02 \\ 
-  Insight & 0.02 & 0.29 & -0.05 & 0.07 & 0.28 & 0.36 & 0.01 & 0.01 \\ 
+  Foresightsight & 0.02 & 0.29 & -0.05 & 0.07 & 0.28 & 0.36 & 0.01 & 0.01 \\ 
   Unkown Mean & 0.49 & -0.26 & 0.37 & -0.11 & 0.29 & 0.53 & -0.29 & -0.01 \\ 
   Noninformative Prior & 0.12 & -0.47 & 0.13 & 0.15 & -0.47 & 0.80 & 0.76 & -0.01 \\ 
   Informative Prior & 0.29 & 0.19 & 0.12 & 0.16 & 0.05 & 0.12 & 0.07 & -0.00 \\ 
@@ -999,7 +1001,7 @@ Baseline & 8.96 & -2.79 & 1.16 & -2.80 & -4.24 & 4.56 & -3.82 & -0.02 \\
  & AMZN & FOX & GE & GOOGL & HSY & MMM & MSFT & SHY \\ 
   \hline
 Baseline & 720.01 & 228.97 & 87.10 & 264.76 & 360.50 & 368.80 & 318.29 & 1.37 \\ 
-  Insight & 0.01 & 0.07 & 0.02 & 0.04 & 0.08 & 0.08 & 0.01 & 0.01 \\ 
+  Foresight & 0.01 & 0.07 & 0.02 & 0.04 & 0.08 & 0.08 & 0.01 & 0.01 \\ 
 Unkown Mean & 100.23 & 52.99 & 36.11 & 51.27 & 89.71 & 102.23 & 53.32 & 2.21 \\ 
 Noninformative Prior & 146.76 & 82.96 & 27.74 & 57.01 & 86.63 & 119.31 & 77.86 & 0.93 \\ 
 Informative Prior & 0.40 & 0.18 & 0.10 & 0.18 & 0.12 & 0.11 & 0.14 & 0.00 \\ 
@@ -1010,28 +1012,33 @@ Informative Prior & 0.40 & 0.18 & 0.10 & 0.18 & 0.12 & 0.11 & 0.14 & 0.00 \\
     \label{tab:contsds}
 \end{table}
 
-Looking at the table of contributions (see Table~\ref{tab:contmeans}) and contribution standard deviations (see Table~\ref{tab:contsds}), we can see that both the insight and informative prior portfolios show similar results, with evenly distributed contributions among the chosen assets and relatively low variances. The same cannot be said about the other portfolios. The baseline portfolio, in particular, derives the overwhelming majority of its total return from the performance of a single asset. This is not a prudent decision.
+Looking at contributions and contribution standard deviations (see Tables~~\ref{tab:contmeans} and~\ref{tab:contsds}), we can see that the foresight and informative prior portfolios show similar results, with evenly distributed contributions among the chosen assets and relatively low variances. The same cannot be said about the other portfolios. The baseline portfolio, in particular, derives the overwhelming majority of its total return from the performance of a single asset. This is not a prudent decision.
 
 Looking at the asset contributions to total portfolio returns, the portfolio based on the informative prior outperforms the insight portfolio by generating wealth across all assets in the portfolio while avoiding losses. At the same time, variances in contributions indicate a degree of risk similar to higher variances in asset returns. The low variances in asset returns in the insight portfolio indicates that returns remain consist, and are derived in similar amounts from similar sources, across a range of market conditions.
 
 \section{Conclusions}
 
-While the results are very encouraging, we should resist the temptation to read too much into them. First of all, drawing general conclusions from a single period of stock market performance is difficult. Even when we try to resample returns to make outcomes more general (as occurred in the preceding validations), it is very difficult to believe that any one period of returns will strictly resemble another. Moreover, with the work provided above, it is also hard to conclude a suitable balance between the different pieces of information going into the model. The use of an informative seems to indicate that the portfolio will do better when it is weighted away from the data of the previous three months. But how much is appropriate? At this point, it's still hard to say.
+While the results are encouraging, we should resist the temptation to read too much into them. First, drawing general conclusions from a single period of stock market performance is difficult. Even when we try to resample returns to make outcomes more general (as occurred in the preceding validations), it is difficult to believe that any one period of returns will resemble another. Moreover, with the work provided above, it is also hard to find a suitable balance between the different pieces of information going into the model. The use of an informative seems to indicate that the portfolio will do better when it is weighted away from the data of the previous three months. But how much is appropriate? At this point, it's still hard to say.
 
-With those things in mind, there are definitely some positive features to take away from these small experiments. For one, a Bayesian framework of parameter estimation allows the analyst to incorporate a broader spectrum of information. No doubt, this is beneficial and important in a setting like the stock market. A lot of useful information about stock prices is available and waiting tools for incorporating it into pricing models and portfolio design. Moreover, as Rachev shows, a variety a different models can be balanced using a similar Bayesian framework. 
+With those things in mind, these small experiments highlight some positive features. For one, a Bayesian framework of parameter estimation allows the analyst to incorporate a broader spectrum of information. No doubt, this is beneficial and important in a setting like the stock market. A lot of useful information about stock prices is available and waiting tools for incorporating it into pricing models and portfolio design. Moreover, as Rachev shows, \cite{rachev04} a variety of models can be balanced using a similar Bayesian framework. 
 
-For a lot of people familiar with work in finance, these recommendations may come off as little more than common sense. Nonetheless, these heuristics often lack a reliable rigorous framework, as is the case with a lot of the ad hoc techniques for building portfolios. In that regard, Bayesian methodologies open up an interesting frontier of using broader selections of knowledge along with robust mathematical techniques.
+Bayesian methodologies would be useful to financial analysts in Kazakhstan, as it is a data-poor country. Kazakhstan does not differ from other developing countries in that regard. The Kazakhstan Stock Exchange (KASE) provides information to institutional investors, but it pales in comparison to the data available in Western markets. Furthermore, locally generated financial and economic data are often perceived as unreliable. Whether this is warranted or not is a separate discussion. Combined these factors pose a risk to all Kazakhstani investors.
+
+What can be done? The institutions needed for better financial data might not be developed for a long time, but there is a large amount of information available from local experts, businessmen and politicians. A Bayesian analyst would seize the opportunity to incorporate this information through informative priors. As Kazakhstan has experienced several periods of high volatility and uncertainty, like the example given in this paper, informative priors have the potential to improve the performance of portfolios. 
+
+For people familiar with work in business in Kazakhstan, these recommendations may seem like common sense. Most would agree that personal connections and word-of-mouth channels are critical to understanding the local business climate. Nonetheless, these heuristics often lack a reliable rigorous framework, as is the case with ad hoc techniques for building portfolios. In that regard, Bayesian methodologies encourage a broader selection of knowledge along with robust mathematical techniques.
+
 
 \begin{thebibliography}{99}
         \bibitem{best91} Best, M. J., \& Grauer, R. R. (1991). On the sensitivity of mean-variance-efficient portfolios to changes in asset means: some analytical and computational results. \textit{Review of Financial Studies}, 4(2), 315-342.
         \bibitem{black92} Black, F., \& Litterman, R. (1992). Global portfolio optimization. Financial \textit{Analysts Journal}, 28-43.
         \bibitem{clement99} Clement, M. B. (1999). Analyst forecast accuracy: Do ability, resources, and portfolio complexity matter?.\textit{ Journal of Accounting and Economics}, 27(3), 285-303.
         \bibitem{chopra93} Chopra, V. K., \& Ziemba, W. T. (1993). The effect of errors in means, variances, and covariances on optimal portfolio choice. \textit{The journal of portfolio management}, 19(2), 6-11.
-        \bibitem{const95}Constantinides, G. M., \& Malliaris, A. G. (1995). Portfolio theory. \emph{Handbooks in operations research and management science}, 9, 1-30.
+        \bibitem{const95} Constantinides, G. M., \& Malliaris, A. G. (1995). Portfolio theory. \emph{Handbooks in operations research and management science}, 9, 1-30.
         \bibitem{gelman13} Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., \& Rubin, D. B. (2013). \textit{Bayesian data analysis}. CRC press.
         \bibitem{german84} Geman, S., \& Geman, D. (1984). Stochastic relaxation, Gibbs distributions, and the Bayesian restoration of images.\textit{ Pattern Analysis and Machine Intelligence, IEEE Transactions on}, (6), 721-741.
-        \bibitem{hoff09} Hoff, P. D. (2009). \textit{A first course in Bayesian statistical methods}. Springer Science & Business Media.
-        \bibiem{kruschke10} Kruschke, J. (2010). Doing Bayesian data analysis: A tutorial introduction with R. Academic Press.
+        \bibitem{hoff09} Hoff, P. D. (2009). \textit{A first course in Bayesian statistical methods}. Springer Science \& Business Media.
+        \bibitem{kruschke10} Kruschke, J. (2010). Doing Bayesian data analysis: A tutorial introduction with R. Academic Press.
         \bibitem{mandel04} Mandelbrot, B., \& Hudson, R. L. (2004). \textit{The (Mis)Behaviour of Markets: A Fractal View of Risk, Ruin, and Reward}. London: Profile Books.
         \bibitem{mark52} Markowitz, H. (1952). Portfolio selection*. \textit{The journal of finance}, 7(1), 77-91. 
     \bibitem{matu13} Matuszak, A. (2013). Building an Optimized Portfolio with R. \textit{Modern Portfolio Theory}. Retrieved on May 5, 2012 from \url{http://economistatlarge.com/portfolio-theory/r-optimized-portfolio}. 

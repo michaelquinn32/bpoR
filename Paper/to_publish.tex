@@ -75,6 +75,7 @@
                         % and <{\command} for commands to be executed right after
                         % each column element
 
+\usepackage{bm}
 \usepackage{subfig}                                          % Fix the captions
 \captionsetup[table]{aboveskip=6pt}
 
@@ -125,94 +126,100 @@ Several methodological issues need to be addressed. I'll begin with a discussion
 
 \subsection{Optimal Portfolio Allocation}
 
-Let's define a portfolio $p$ as the weighted average of a series of assets with random returns $X_i$.\footnote{All discussions of assets will center on returns, and data is formatted accordingly. A typical stock offers capital returns in the form of price increases and dividends. Bonds offer returns in the form of coupon payments and the difference between market and face value.} At time $t$ we have the following vector of returns:
+Let’s define a portfolio p as the weighted average over a vector consisting of $k$ random assets.\footnote{All discussions of assets will center on returns, and data is formatted accordingly. A typical stock offers capital returns in the form of price increases and dividends. Bonds offer returns in the form of coupon payments and the difference between market and face value.} I’ll call this vector $\bm{X}$:
 
 \begin{flalign}
-    \mathbf{X}^{(t)} = \left( \mathbf{X}_1^{(t)}, \dots , \mathbf{X}_n^{(t)} \right)^T
+    \bm{X} = \left( \bm{X}_1, \dots , \bm{X}_k \right)^T
 \end{flalign}
 
-Assume that they have the following multivariate normal distribution that depends on expected individual asset returns $\mathbf{\mu}$ and variance $\mathbf{\Sigma}$.\footnote{This is a simplifying assumption that does not hold in all market conditions. See Mandelbrot (2004).\cite{mandel04} Plenty of research, including that of Markowitz, has shown that an optimal portfolio can still be found after relaxing this assumption. See (Rachev, Ortobelli, and Schwartz, 2004).\cite{rachev04}}
+Assume this vector follows multivariate normal distribution that depends on expected individual asset returns $\bm{\mu}$ and variance $\bm{\Sigma}$.\footnote{This is a simplifying assumption that does not hold in all market conditions. See Mandelbrot (2004).\cite{mandel04} Plenty of research, including that of Markowitz, has shown that an optimal portfolio can still be found after relaxing this assumption. See (Rachev, Ortobelli, and Schwartz, 2004).\cite{rachev04}}
 
 \begin{flalign}
-    p(\mathbf{X}_t | \mathbf{\mu}, \mathbf{\Sigma}) = N(\mathbf{\mu}, \mathbf{\Sigma})
+    \bm{X} \sim N \left( \bm{\mu}, \bm{\Sigma} \right)
+\end{flalign}
+
+The linear combination of these random variables across a vector of weights ω is our portfolio.
+
+\begin{flalign}
+    p = \bm{\omega}^T \bm{X}
 \end{flalign}
 
 Portfolio weights are determined by the amount of total wealth allocated towards each asset. I will limit the weight $\omega_i$  of each asset in the portfolio to fall between -0.5 and 0.5, as I hope to reduce the effects of extreme distributions. A negative allocation is equivalent to short-selling that asset.
 
-Thus, the expected return from a portfolio is just the weighted average of the returns of each of the $n$ assets $x_i$.
+Thus, the expected return from a portfolio is just the weighted average of the expected returns of each of the $k$ assets.
 
 \begin{flalign}
-    \textrm{E}[\mathbf{X}_t] = \mu_p = \sum_{i=1}^{n}\omega_i x_i = \mathbf{\omega}^T \mathbf{X} 
+    \mu_p = \textrm{E}[p] = \textrm{E}[\bm{\omega}^T \bm{X}] = \bm{\omega}^T \bm{\mu}
 \end{flalign}
 
 We will define risk as the variance of these returns. Since the movements of individual prices, dividends and returns within the stock market are correlated, a portfolio can either magnify or mitigate the risks of holding two assets. This can be captured in the covariance matrix.
 
 \begin{flalign}
-    \mathbf{\Sigma} = \textrm{E}\left[ (\mathbf{X} - \textrm{E}[\mathbf{X}]) (\mathbf{X} - \textrm{E}[\mathbf{X}])^T \right]
+    \bm{\Sigma} = \textrm{E}\left[ (\bm{X} - \textrm{E}[\bm{X}]) (\bm{X} - \textrm{E}[\bm{X}])^T \right]
 \end{flalign}
 
 The portfolio variance $\sigma_p^2$ is a scalar that depends on the asset allocation weights and the covariance matrix.
 
 \begin{flalign}
-    \sigma_p^2 & = \mathbf{\omega}^T \mathbf{\sigma} \mathbf{\omega}
+    \sigma_p^2 & = \bm{\omega}^T \bm{\Sigma} \bm{\omega}
 \end{flalign}
 
 The investor holds the portfolio over the limited time period. From this, the optimization problem can be expressed in two parts. First, the investor wishes to minimize risk while exceeding a minimum level of returns $\mu^*$.
 
 \begin{flalign}
-    \mathbf{\omega}^* = & \textrm{ min } \sigma_p^2  \notag \\
-    & \textrm{subject to }  \mathbf{\omega}^T \mathbf{\mu}_p \ge \mu* \notag \\
-    & \mathbf{\omega}^T \mathbf{1} = 1
+    \bm{\omega}^* = & \textrm{ min } \sigma_p^2  \notag \\
+    & \textrm{subject to }  \bm{\omega}^T \bm{\mu} \ge \mu* \notag \\
+    & \bm{\omega}^T \bm{1} = 1
 \end{flalign}
 
-Above, $\mathbf{1}$ is a vector of 1's with the same dimension as $\mathbf{\omega}$. In other words, the weights must always sum to 1. At the same time, the investor wishes to maximize returns while not exceeding a maximum acceptable level of risk $\sigma^{2*}$.
+Above, $\bm{1}$ is a vector of 1's with the same dimension as $\bm{\omega}$. In other words, the weights must always sum to 1. At the same time, the investor wishes to maximize returns while not exceeding a maximum acceptable level of risk $\sigma^{2*}$.
 
 \begin{flalign}
-    \mathbf{\omega}^* = & \textrm{ max } \mu_p \notag \\     
-    & \textrm{subject to } \mathbf{\omega}^T \mathbf{\sigma}_p \mathbf{\omega} \le \sigma^{2*} \notag \\ 
-    & \mathbf{\omega}^T \mathbf{1} = 1
+    \bm{\omega}^* = & \textrm{ max } \mu_p \notag \\     
+    & \textrm{subject to } \bm{\omega}^T \bm{\Sigma} \bm{\omega} \le \sigma^{2*} \notag \\ 
+    & \bm{\omega}^T \bm{1} = 1
 \end{flalign}
 
 Without constraints on the maximum and minimum allocations of assets in the portfolio, this problem can be solved using only matrix algebra. The investor's minimum variance portfolio is
 
 \begin{flalign}
-    \mathbf{\omega}^* = \frac{\mathbf{\sigma}_p^{-1} \mathbf{1}}{\mathbf{1}^T \mathbf{\sigma}_p^{-1} \mathbf{1}}
+    \bm{\omega}^* = \frac{\bm{\Sigma}^{-1} \bm{1}}{\bm{1}^T \bm{\Sigma}^{-1} \bm{1}}
 \end{flalign}
 
 The investor can add both risk and return up to his or her predefined \textit{risk limit}. For each desired level of return $\mu_p$, the optimal weights $\omega^*$ are found in the solution to the following linear system.
 
 \begin{flalign}
-    \mathbf{D} \mathbf{z} = \mathbf{d}
+    \bm{D} \bm{z} = \bm{d}
 \end{flalign}
 
 In the preceding formula,
 
 \begin{flalign}
-    \mathbf{D} =
+    \bm{D} =
     \begin{pmatrix}
-        2 \mathbf{\Sigma} & \mathbf{\mu} & \mathbf{1} \\
-        \mathbf{\mu}^T & 0 & 0 \\
-        \mathbf{1}^T & 0 & 0
+        2 \bm{\Sigma} & \bm{\mu} & \bm{1} \\
+        \bm{\mu}^T & 0 & 0 \\
+        \bm{1}^T & 0 & 0
 \end{pmatrix}, \quad
-    \mathbf{z} =
+    \bm{z} =
     \begin{pmatrix}
-        \mathbf{\omega}^* \\ \mathbf{\lambda}
+        \bm{\omega}^* \\ \bm{\lambda}
     \end{pmatrix}, \quad
-    \mathbf{d} = 
+    \bm{d} = 
         \begin{pmatrix}
-            \mathbf{0} \\
+            \bm{0} \\
             \mu_p \\
             1
         \end{pmatrix}
 \end{flalign}
 
-The parameter $\mathbf{\lambda}$ is chosen to satisfy the following Lagrangian equation:
+The parameter vector $\bm{\lambda}$ is chosen to satisfy the following Lagrangian equation. As can be seen in the equation, the vector has two elements:
 
 \begin{flalign}
-    L(\omega, \mathbf{\lambda}) = \mathbf{\omega}^T \mathbf{\sigma} \mathbf{\omega} - \mathbf{\lambda} \left( \mathbf{A} \mathbf{\omega} - \mathbf{b} \right)
+    L(\omega, \bm{\lambda}) = \bm{\omega}^T \bm{\Sigma} \bm{\omega} - \bm{\lambda} \left( \bm{A} \bm{\omega} - \bm{b} \right)
 \end{flalign}
 
-The matrix $\mathbf{A} $ and vector $\mathbf{b}$ allow for the creation of the three constraints in this problem:
+The matrix $\bm{A} $ and vector $\bm{b}$ allow for the creation of the three constraints in this problem:
 
 \begin{itemize}
     \item The return of the portfolio must exceed the desired return at that risk level. This allows the solver to iterate over a range of possible returns and variances.
@@ -235,96 +242,96 @@ I implemented this problem in \texttt{R} using the \texttt{quadprog} package and
 
 \subsection{Bayesian Inference with Multinormal Distribution}
 
-Unless otherwise noted, all of the Bayesian forms of the multivariate normal distribution come from Gelman \textit{et. al.} (2013).\cite{gelman13}. I will implement three versions of the Bayesian multivariate normal model. First, let's define the multivariate normal distribution as follows:
+Unless otherwise noted, all of the Bayesian forms of the multivariate normal distribution come from Gelman \textit{et. al.} (2013).\cite{gelman13} I will implement three versions of the Bayesian multivariate normal model. First, let's define the multivariate normal distribution as follows. Given a vector of random variables:
 
 \begin{flalign}
-    \mathbf{y}|\mathbf{\mu},\mathbf{\Sigma} \sim N(\mathbf{\mu},\mathbf{\Sigma})
+    \bm{y}|\bm{\mu},\bm{\Sigma} \sim N(\bm{\mu},\bm{\Sigma})
 \end{flalign}
 
-As mentioned above, this is the simulation distribution of our asset returns. This model has the parameter vector of means $\mathbf{\mu}$ of length $d$ and the parameter matrix of variances and covariances $\mathbf{\Sigma}$ is $d$ by $d$. The probability density function of this model is
+As mentioned above, this is the simulation distribution of our asset returns. This model has the parameter vector of means $\bm{\mu}$ of length $k$ and the parameter matrix of variances and covariances $\bm{\Sigma}$ is $k$ by $k$. The probability density function of this model is
 
 \begin{flalign}
-    p(\mathbf{y}|\mathbf{\mu},\mathbf{\Sigma}) \propto |\mathbf{\Sigma}|^{-1/2} \exp \left(- \frac{1}{2} \left( \mathbf{y} - \mathbf{\mu} \right)^T \mathbf{\Sigma}^{-1} \left( \mathbf{y} - \mathbf{\mu} \right)  \right)
+    p(\bm{y}|\bm{\mu},\bm{\Sigma}) \propto |\bm{\Sigma}|^{-1/2} \exp \left(- \frac{1}{2} \left( \bm{y} - \bm{\mu} \right)^T \bm{\Sigma}^{-1} \left( \bm{y} - \bm{\mu} \right)  \right)
 \end{flalign}
 
 For $n$ independently and identically distributed (i.i.d.) observations, the likelihood is 
 
 \begin{flalign}
-    p(\mathbf{y}_1, \dots, \mathbf{y}_n |\mathbf{\mu},\mathbf{\Sigma}) \propto |\mathbf{\Sigma}|^{-n/2} \exp \left(- \frac{1}{2} \textrm{tr} \left( \mathbf{\Sigma}^{-1} \mathbf{S}_0 \right)  \right)    
+    p(\bm{y}_1, \dots, \bm{y}_n |\bm{\mu},\bm{\Sigma}) \propto |\bm{\Sigma}|^{-n/2} \exp \left(- \frac{1}{2} \textrm{tr} \left( \bm{\Sigma}^{-1} \bm{S}_0 \right)  \right)    
 \end{flalign}
 
-$\mathbf{S}_0$ is the sum of squares matrix relative to $\mathbf{\mu}$ and is defined thusly,
+$\bm{S}_0$ is the sum of squares matrix relative to $\bm{\mu}$ and is defined thusly,
 
 \begin{flalign}
-    \mathbf{S}_0 = \sum_{i=1}^{n}(\mathbf{y}_i - \mathbf{\mu})(\mathbf{y}_i - \mathbf{\mu})^T
+    \bm{S}_0 = \sum_{i=1}^{n}(\bm{y}_i - \bm{\mu})(\bm{y}_i - \bm{\mu})^T
     \label{}
 \end{flalign}
 
-When variance is known, the \textit{posterior distribution for $\mu$ with known $\mathbf{\Sigma}$} is as follows,
+When variance is known, the \textit{posterior distribution for $\mu$ with known $\bm{\Sigma}$} is as follows,
 
 \begin{flalign}
-    p(\mathbf{\mu}| \mathbf{y} \mathbf{\Sigma}) & \propto \exp \left( -\frac{1}{2} \left( \mathbf{\mu} - \mathbf{\mu}_n \right)^T \mathbf{\Lambda}_n^{-1} \left( \mathbf{\mu} - \mathbf{\mu}_n \right) \right) \notag \\
-    & = N(\mathbf{\mu} | \mathbf{\mu}_n, \mathbf{\Lambda}_n)
+    p(\bm{\mu}| \bm{y} \bm{\Sigma}) & \propto \exp \left( -\frac{1}{2} \left( \bm{\mu} - \bm{\mu}_n \right)^T \bm{\Lambda}_n^{-1} \left( \bm{\mu} - \bm{\mu}_n \right) \right) \notag \\
+    & = N(\bm{\mu} | \bm{\mu}_n, \bm{\Lambda}_n)
     \label{}
 \end{flalign}
 
-The precision matrix $\mathbf{\Lambda}$ is the inverse of the covariance, and is easier to work with in certain distributions. I will define it and the parameterized version of $\mathbf{\mu}_n$ as follows,
+The precision matrix $\bm{\Lambda}$ is the inverse of the covariance, and is easier to work with in certain distributions. I will define it and the parameterized version of $\bm{\mu}_n$ as follows,
 
 \begin{flalign}
-    \mathbf{\mu}_n & = \left( \mathbf{\Lambda}_0^{-1} + n \mathbf{\Sigma}^{-1} \right)^{-1} \left( \mathbf{\Lambda}_0^{-1} \mathbf{\mu}_0 + n \mathbf{\Sigma}^{-1} \bar{y} \right) \notag \\
-    \mathbf{\Lambda}^{-1} & = \mathbf{\Lambda}_0^{-1} + n \mathbf{\Sigma}^{-1}
+    \bm{\mu}_n & = \left( \bm{\Lambda}_0^{-1} + n \bm{\Sigma}^{-1} \right)^{-1} \left( \bm{\Lambda}_0^{-1} \bm{\mu}_0 + n \bm{\Sigma}^{-1} \bar{y} \right) \notag \\
+    \bm{\Lambda}^{-1} & = \bm{\Lambda}_0^{-1} + n \bm{\Sigma}^{-1}
 \end{flalign}
 
-where $\mathbf{\mu}_0$ and $\mathbf{\Lambda}_0$ are the prior mean vector and variance matrix for the conjugate prior distribution of $\mathbf{\mu} \sim N(\mathbf{\mu}_0, \mathbf{\Lambda}_0)$. $\mathbf{\Sigma}$ is the sample variance and $\bar{y}$ is the sample mean.
+where $\bm{\mu}_0$ and $\bm{\Lambda}_0$ are the prior mean vector and variance matrix for the conjugate prior distribution of $\bm{\mu} \sim N(\bm{\mu}_0, \bm{\Lambda}_0)$. $\bm{\Sigma}$ is the sample variance and $\bar{y}$ is the sample mean.
 
-For sampling purposes it is usually easier to work with the posterior conditional marginal distributions of subvectors of $\mathbf{\mu} $ with a known variance. Let the index $(-1)$ or $(-1,-1)$ indicate the absence of an element with the index $(1)$ or $(1,1)$ from the vector of means or matrix of variances. Then appropriate conditional and marginal distributions are,
+For sampling purposes it is usually easier to work with the posterior conditional marginal distributions of subvectors of $\bm{\mu} $ with a known variance. Let the index $(-1)$ or $(-1,-1)$ indicate the absence of an element with the index $(1)$ or $(1,1)$ from the vector of means or matrix of variances. Then appropriate conditional and marginal distributions are,
 
 \begin{flalign}
-    \mu^{(1)}|\mathbf{\mu}^{(-1)}, \mathbf{y} \sim N\left( \mu_n^{(1)} + \beta^{1|2}\left( \mathbf{\mu}^{(-1)} - \mathbf{\mu}_n^{(-1)} \right), \mathbf{\Lambda}^{1|2} \right)
+    \mu^{(1)}|\bm{\mu}^{(-1)}, \bm{y} \sim N\left( \mu_n^{(1)} + \beta^{1|2}\left( \bm{\mu}^{(-1)} - \bm{\mu}_n^{(-1)} \right), \bm{\Lambda}^{1|2} \right)
     \label{}
 \end{flalign}
 
-The regression coefficient $\beta^{1|2}$ and the conditional variance matrix $\mathbf{\Lambda}^{1|2}$ are defined as follows,
+Thus, the preceding marginal distribution allows us to sample for a single mean in the means vectors. The coefficients to find the conditional mean $\beta^{1|2}$ and the conditional percision matrix $\bm{\Lambda}^{1|2}$ are defined as follows,
 
 \begin{flalign}
-    \beta^{1|2} & = \mathbf{\Lambda}_n^{(-1,1)} \left( \mathbf{\Lambda}_n^{(-1,-1)} \right)^{-1} \notag \\
-    \mathbf{\Lambda}^{1|2} & = \mathbf{\Lambda}_n^{(1,1)} - \mathbf{\Lambda}_n^{(-1,1)} \left( \mathbf{\Lambda}_n^{(-1,-1)} \right)^{-1}  \mathbf{\Lambda}_n^{(1,-1)}
+    \beta^{1|2} & = \bm{\Lambda}_n^{(-1,1)} \left( \bm{\Lambda}_n^{(-1,-1)} \right)^{-1} \notag \\
+    \bm{\Lambda}^{1|2} & = \bm{\Lambda}_n^{(1,1)} - \bm{\Lambda}_n^{(-1,1)} \left( \bm{\Lambda}_n^{(-1,-1)} \right)^{-1}  \bm{\Lambda}_n^{(1,-1)}
     \label{}
 \end{flalign}
 
 As it turns out, setting up the multivariate normal distribution with both an unknown mean and variance is even easier than when only the mean is unknown. The conjugate prior is parameterized as follows:
 
 \begin{flalign}
-    \mathbf{\Sigma} & \sim \textrm{ Inv-Wishart}_{v_0}\left( \mathbf{\Lambda}_0^{-1} \right) \notag \\
-    \mathbf{\mu}|\mathbf{\Sigma}  & \sim N\left( \mu_0, \mathbf{\Sigma}/\kappa_0  \right)
+    \bm{\Sigma} & \sim \textrm{ Inv-Wishart}_{v_0}\left( \bm{\Lambda}_0^{-1} \right) \notag \\
+    \bm{\mu}|\bm{\Sigma}  & \sim N\left( \mu_0, \bm{\Sigma}/\kappa_0  \right)
     \label{}
 \end{flalign}
 
-The parameter $v_0$ is the number of degrees of freedom, and $\mathbf{\Lambda}_0$ is the scale matrix for the inverse-Wishart distribution.\footnote{Given a standard multivariate-normally distributed matrix $\mathbf{Z} \sim N(\mathbf{0}, \mathbf{\Sigma})$, a variable $\mathbf{W} = \mathbf{Z}^T \mathbf{Z}$ follows a Wishart distribution. In that sense, it is a multivariate generalization of the Chi-square distribution. If $\mathbf{W}$ follows a Wishart distribution, $\mathbf{S} = \mathbf{W}^{-1}$ follows the inverse Wishart distribution.} This is the final element we need in our algorithm create random matrices that follow multivariate normal distribution.
+The parameter $v_0$ is the number of degrees of freedom, and $\bm{\Lambda}_0$ is the scale matrix for the inverse-Wishart distribution.\footnote{Given a standard multivariate-normally distributed matrix $\bm{Z} \sim N(\bm{0}, \bm{\Sigma})$, a variable $\bm{W} = \bm{Z}^T \bm{Z}$ follows a Wishart distribution. In that sense, it is a multivariate generalization of the Chi-square distribution. If $\bm{W}$ follows a Wishart distribution, $\bm{S} = \bm{W}^{-1}$ follows the inverse Wishart distribution.} This is the final element we need in our algorithm create random matrices that follow multivariate normal distribution.
 
 Using \texttt{R}, this distribution is available as a part of the \texttt{MCMC} package. In the distribution for the mean, $\kappa_0$ is the prior number of measurements used to calculate the mean.
 
 From the prior density and the normal likelihood, we derive the following set of parameters.
 
 \begin{flalign}
-    \mathbf{\mu}_n & = \frac{\kappa_0}{\kappa_0 + n} \mu_0 + \frac{n}{k_0 + n} \bar{y} \notag \\
+    \bm{\mu}_n & = \frac{\kappa_0}{\kappa_0 + n} \mu_0 + \frac{n}{k_0 + n} \bar{y} \notag \\
     \kappa_n & = \kappa_0 + n \notag \\
     v_n & = v_0 + n \notag \\
-    \mathbf{\Lambda}_n & = \mathbf{\Lambda}_0 + \mathbf{S} + \frac{\kappa_0 n}{\kappa_0 + n} \left(\bar{y}  -\mu_0  \right) \left( \bar{y} -\mu_0 \right)^T
+    \bm{\Lambda}_n & = \bm{\Lambda}_0 + \bm{S} + \frac{\kappa_0 n}{\kappa_0 + n} \left(\bar{y}  -\mu_0  \right) \left( \bar{y} -\mu_0 \right)^T
 \end{flalign}
 
 Sampling from this distribution occurs iteratively over two steps.
 
 \begin{itemize}
-    \item First, sample $\mathbf{\sigma}|\mathbf{y} \sim \textrm{ Inv-Wishart}_{v_n}\left( \mathbf{\Lambda}_n^{-1} \right)$
-    \item Then, sample $\mathbf{\mu}|\mathbf{\Sigma},\mathbf{y}  \sim N\left( \mu_n, \mathbf{\Sigma}/\kappa_n  \right)$
+    \item First, sample $\bm{\sigma}|\bm{y} \sim \textrm{ Inv-Wishart}_{v_n}\left( \bm{\Lambda}_n^{-1} \right)$
+    \item Then, sample $\bm{\mu}|\bm{\Sigma},\bm{y}  \sim N\left( \mu_n, \bm{\Sigma}/\kappa_n  \right)$
 \end{itemize}
 
 If, instead, we want to employ a non-informative prior, the process only needs a few small adjustments.
 
 \begin{itemize}
-    \item First, sample $\mathbf{\sigma}|\mathbf{y} \sim \textrm{ Inv-Wishart}_{n-1}\left( \mathbf{S} \right)$
-    \item Then sample $\mathbf{\mu}|\mathbf{\Sigma},\mathbf{y}  \sim N\left( \bar{y}, \mathbf{\Sigma}/n  \right)$
+    \item First, sample $\bm{\sigma}|\bm{y} \sim \textrm{ Inv-Wishart}_{n-1}\left( \bm{S} \right)$
+    \item Then sample $\bm{\mu}|\bm{\Sigma},\bm{y}  \sim N\left( \bar{y}, \bm{\Sigma}/n  \right)$
 \end{itemize}
 
 \subsection{Gibbs Sampling Algorithms}
@@ -365,13 +372,13 @@ W & = Y - X \notag \\
 W & \sim N(\mu_Y - \mu_X, \sigma_Y^2 + \sigma_X^2 - 2 \sigma_X \sigma_Y)
 \end{flalign}
 
-Using these simulated results, we can also assess the individual asset contribution to the total return. A well-designed and robust portfolio should generate returns across many different assets over an extended period. Otherwise, a particular portfolio outcome may have more to do with a particular market outcome than with our asset allocation. Given an $m$ by $n$ matrix of returns $\mathbf{X}$, where $m$ equals the periods in the simulation and $n$ is the number of assets, the vector of asset contributions $\mathbf{C}$ can be calculated as follows.
+Using these simulated results, we can also assess the individual asset contribution to the total return. A well-designed and robust portfolio should generate returns across many different assets over an extended period. Otherwise, a particular portfolio outcome may have more to do with a particular market outcome than with our asset allocation. Given an $m$ by $n$ matrix of returns $\bm{X}$, where $m$ equals the periods in the simulation and $n$ is the number of assets, the vector of asset contributions $\bm{C}$ can be calculated as follows.
 
 \begin{flalign}
-  \mathbf{C} & = \frac{1}{\mu_p} \mathrm{D}(\mathbf{\omega_p}) \mathbf{X}^T \mathbf{1}_n
+  \bm{C} & = \frac{1}{\mu_p} \mathrm{D}(\bm{\omega_p}) \bm{X}^T \bm{1}_n
 \end{flalign}
 
-In the preceding formula, $\mu_p$ is the total return for a given portfolio, and $\mathrm{D}(\mathbf{\omega_p})$ is a diagonal matrix constructed from the corresponding asset weights. Ultimately, this amounts to the weighted column sums divided by their sum, i.e. a relatively simple proportion, which is calculated for each portfolio.
+In the preceding formula, $\mu_p$ is the total return for a given portfolio, and $\mathrm{D}(\bm{\omega_p})$ is a diagonal matrix constructed from the corresponding asset weights. Ultimately, this amounts to the weighted column sums divided by their sum, i.e. a relatively simple proportion, which is calculated for each portfolio.
 
 For the sake of interpretation, I index returns at 1 in this paper when discussing portfolio performance over a given period. In other words, all time series start at one instead of zero. But for these calculations, this indexing needs to be removed. If contribution for each asset is a portion of the total return, indexing at one will bias all of these ratios.
 

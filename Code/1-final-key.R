@@ -33,6 +33,7 @@ library(xtable)
 
 source('final-data.R')
 source('final-opt.R')
+source('final-describe.R')
 source('final-naive.R')
 source('final-foresight.R')
 source('final-bayes-uk-mean.R')

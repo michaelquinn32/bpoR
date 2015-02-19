@@ -83,18 +83,20 @@ p = ggplot(plots, aes(x=value, fill=Var2)) + geom_density(alpha=.3) +
 print(p)
 
 colnames(df.out)[5] = "IP"
-p = ggplot(df.out, aes(y=IP, x=Market)) + geom_point(alpha=.5) + geom_density2d() + 
+p.ipdist = ggplot(df.out, aes(y=IP, x=Market)) + geom_point(alpha=.5) + geom_density2d() + 
   annotate("segment", x=0.75,y=0.75,xend=2,yend=2, colour="blue") +
   ylab("Bayesian, Informative Prior") + 
-  ggtitle("Joint Distribution")
-print(p)
+  ggtitle("Joint Distribution") + 
+  theme(legend.position="bottom")
+print(p.ipdist)
 
 name = colnames(out)[5]
 plots = dist.plots[dist.plots$Var2 %in% c(name,"Market"),]
-p = ggplot(plots, aes(x=value, fill=Var2)) + geom_density(alpha=.3) +
+p.ipdens = ggplot(plots, aes(x=value, fill=Var2)) + geom_density(alpha=.3) +
   scale_fill_discrete(name="Portfolio") + 
-  ggtitle("Densities")
-print(p)
+  ggtitle("Densities") + 
+  theme(legend.position="bottom")
+print(p.ipdens)
 
 plots = dist.plots[dist.plots$Var2 %in% name,]
 plots[,3] = dist.plots[dist.plots$Var2 %in% "Market",3] -

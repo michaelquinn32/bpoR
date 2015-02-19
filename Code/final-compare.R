@@ -16,19 +16,19 @@
 compare = rbind(Market=Market, 
                 Basic= Basic, 
                 Foresight = Foresight, 
-                "Bayesian, Unkown Mean" = Bayes.Mean,
-                "Bayesian, Noninformative Prior" = Bayes.ni,
-                "Bayesian, Informative Prior" = Bayes.ip)
+                "Unkown Mean" = Bayes.Mean,
+                "Noninformative Prior" = Bayes.ni,
+                "Informative Prior" = Bayes.ip)
 
 compare = round(100*compare,2)
-colnames(compare) = c("Annualized Return", "Annualized Risk", "Annualized Sharpe")
+colnames(compare) = c("Expected Return", "Risk", "Annualized Sharpe")
 
 # Comparing Weights
 final.weights = rbind(Baseline= eff.optimal.point, 
                       Foresight = new.eff.optimal.point, 
-                      "Bayesian, Unkown Mean" = b1.optimal.point,
-                      "Bayesian, Noninformative Prior" = b2.optimal.point,
-                      "Bayesian, Informative Prior" = b3.optimal.point)
+                      "Unkown Mean" = b1.optimal.point,
+                      "Noninformative Prior" = b2.optimal.point,
+                      "Informative Prior" = b3.optimal.point)
 
 # Cleaning up
 final.weights = round(100*final.weights[,1:8],2)
@@ -47,10 +47,13 @@ final.returns = data.frame(Market = market,
 
 ret.out = melt(final.returns, id.vars="Date")
 
-p = ggplot(ret.out, aes(x=Date,y=value))
-p = p + geom_line(aes(group=variable, colour =variable)) + scale_colour_discrete(name="Test Portfolio",
-                                      labels=c("Market","Unknown Mean", "Noninformative Prior",
-                                               "Informative Prior", "Baseline","Foresight")) +
+p.cumret = ggplot(ret.out, aes(x=Date,y=value))
+p.cumret = p.cumret + geom_line(aes(group=variable, colour =variable)) + 
+  scale_colour_discrete(name="Test Portfolio",
+                        labels=c("Market","Unknown Mean", "Noninformative Prior",
+                                 "Informative Prior", "Baseline","Foresight")) +
   ggtitle("Cumulative Returns for Each Tested Portfolio") +
+  labs(y="Cumulative Return") +
+  theme(legend.position="bottom") + guides(col = guide_legend(nrow = 2)) +
   labs(y="Cumulative Return")
-print(p)
+print(p.cumret)

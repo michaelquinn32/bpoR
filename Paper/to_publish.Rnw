@@ -36,446 +36,10 @@
 
 \begin{document}
 
-<<finalcode,echo=FALSE,results='hide',message=FALSE,warning=FALSE>>=
-
-library(stockPortfolio) # Stock data
-library(ggplot2)        # Better plots
-library(reshape2)       # For plots
-library(quadprog)       # Used to solve Markowitz problem
-library(MCMCpack)       # More distributions
-library(mvtnorm)        # Multivariate Normal Distribution
-library(tseries)
-library(zoo)            # Required by tseries
-library(xtable)
-
-# Portfolio Optimizer
-make.port = function(means, covariance, 
-            max.allocation=.5,min.allocation=0,
-            risk.premium.up=.5, risk.increment=.005)
-{
-  n = ncol(Cov)
-  
-  # Matrices to solve with quadprog
-  Amat = matrix (1, nrow=n)
-  bvec = 1
-  meq  = 1
-  
-  # Min Constraints
-  Amat = cbind(1, diag(n))
-  bvec = c(bvec, rep(min.allocation, n))
-  
-  # Max Constraints
-  Amat = cbind(Amat, -diag(n))
-  bvec = c(bvec, rep(-max.allocation, n))
-  
-  # Set up the number of points to estimate port frontier
-  loops = risk.premium.up / risk.increment + 1
-  loop = 1
-  
-  # Initialize a matrix to contain allocation and statistics
-  eff = matrix(nrow=loops, ncol=n+3)
-  
-  # Now I need to give the matrix column names
-  colnames(eff) = c(colnames(covariance), "Std.Dev", 
-                    "Exp.Return", "sharpe")
-  
-  # Loop through the quadratic program solver
-  for (i in seq(from=0, to=risk.premium.up, by=risk.increment))
-    {
-    dvec = means * i # This moves the solution along the EF
-    sol = solve.QP(covariance, dvec=dvec, Amat=Amat, 
-                   bvec=bvec, meq=meq)
-    eff[loop,"Std.Dev"] = sqrt(sum(sol$solution*
-                        colSums((covariance*sol$solution))))
-    eff[loop,"Exp.Return"] = as.numeric(sol$solution %*% means)
-    eff[loop,"sharpe"] = eff[loop,"Exp.Return"] / 
-      eff[loop,"Std.Dev"]
-    eff[loop,1:n] = sol$solution
-    loop = loop + 1
-  }
-  
-  return(as.data.frame(eff))
-}
-
-# Plot port and efficient Frontier
-eff.plot=function(eff, eff.optimal.point)
-{
-  ggplot(eff, aes(x=Std.Dev, y=Exp.Return)) + 
-  geom_line(col="Red") +
-  geom_point(data=eff.optimal.point, 
-             aes(x=Std.Dev, y=Exp.Return, 
-            label=sharpe), size=5) +
-  annotate(geom="text", x=eff.optimal.point$Std.Dev,
-   y=eff.optimal.point$Exp.Return,
-   label=paste("Risk: ",
-   round(eff.optimal.point$Std.Dev*100, 
-         digits=3),"%\nReturn: ",
-   round(eff.optimal.point$Exp.Return*100, 
-         digits=4),"%\nSharpe: ",
-   round(eff.optimal.point$sharpe*100, 
-         digits=2), "%", sep=""),
-   hjust=0, vjust=1.2) +
-  labs(x="Risk (standard deviation of portfolio)", 
-       y="Return")
-}
-
-# Portfolio performance
-port.performance = function(eff.optimal.point)
-{
-  n = dim(eff.optimal.point)[2] - 3
-  weights = as.matrix(eff.optimal.point[1,1:n])
-  out = port.test$R%*%t(weights)
-  tlab = sort(as.Date(row.names(out)),decreasing=FALSE)
-  out = rev(out)
-  out[1]= 1 + out[1]
-  tret = cumsum(out)
-  return(list(tret = tret, tlab = tlab, weights = weights))
-}
-
-# Quick summary
-port.summary = function(performance)
-{
-  return(c(52*mean(port.test$R%*%t(performance$weights)), 
-   sqrt(52)*sd(port.test$R%*%t(performance$weights)),
-   52*mean(port.test$R%*%t(performance$weights))/ 
-     (sqrt(52)*sd(port.test$R%*%t(performance$weights)))))
-}
-
-# Get data
-# 20th Century Fox, Microsoft, 3M, Hershey, GE, Google, 
-# Amazon, Risk free
-# 1-3 Year Treasury Bonds iShares as a RF asset
-port = c("FOX", "MSFT", "MMM", "HSY", "GE", 
-         "GOOGL", "AMZN", "SHY")
-index = "^GSPC"         # SP500 Futures index
-
-port.hist = getReturns(port,freq="week",
-   start="2010-01-01", end="2011-12-31")
-
-port.test = getReturns(port,freq="week",
-   start="2012-01-01", end="2013-12-31")
-
-baseline.hist = getReturns(index,freq="week",
-       start="2010-01-01", end="2011-12-31")
-
-baseline.test = getReturns(index,freq="week",
-       start="2012-01-01", end="2013-12-31")
-
-# 10 years of returns for "historical" means and variances
-hist.prices=NULL
-for(p in port)
-{
-  prices = get.hist.quote(p,quote="Adj",start="2001-01-01",
-                          end="2013-12-31",compression="w")
-  if(is.null(hist.prices))
-  {
-    hist.prices = prices
-    colnames(hist.prices) = p
-  }else hist.prices = cbind(hist.prices, prices)
-}
-
-colnames(hist.prices) = port
-
-# Convert to Returns
-hist.returns = diff(log(hist.prices))
-hist.returns = exp(hist.returns)-1
-
-#simplifies things with only complete cases
-hist.returns= hist.returns[complete.cases(hist.returns),]
-hist.means=apply(hist.returns,2,mean,na.rm=TRUE)
-hist.cov = cov(hist.returns, use="complete.obs")
-
-# Descriptive Stats last three months
-end = 1
-start = end + 23
-Means = apply(port.hist$R[start:end,],2,mean)
-StDev = apply(port.hist$R[start:end,],2,sd)
-Total = apply(port.hist$R[start:end,],2,sum) 
-Cov = cov(port.hist$R[start:end,])
-n = length(port)
-
-# Plot of stock returns
-market = baseline.hist$R[start:end,]
-market = c(1,market)
-market = cumsum(market)
-hist.dates = as.Date(rownames(port.hist$R[(start+1):end,]))
-return.out = port.hist$R[start:end,]
-return.out = rbind(1,return.out)
-return.out = apply(return.out,2,cumsum)
-port.out = data.frame(SP500 = market, return.out, Date=hist.dates)
-hist.plot = melt(port.out,id="Date")
-
-# Basic Stats, Naive Estimates
-stocks.table = data.frame(rbind(52*Means, sqrt(52)*StDev, 
-                  52*Means/(sqrt(52)*StDev)))
-row.names(stocks.table) = c("Annualized Return", 
-                "Annualized St. Dev.", 
-               "Sharpe Ratio")
-stocks.table[1:2,] = 100*stocks.table[1:2,]
-stocks.table = round(stocks.table,4)
-
-# Make Naive Port
-eff = make.port(Means, Cov,.5,-.5)
-eff.optimal.point = eff[eff$sharpe==max(eff$sharpe),]
-
-# Efficient Frontier and performance
-perf = port.performance(eff.optimal.point)
-
-#Motivating Example, later means help?
-New.Means=apply(port.test$R,2,mean)
-New.Cov = cov(port.test$R)
-new.eff = make.port(New.Means, New.Cov,.5,-.5)
-new.eff.optimal.point = new.eff[new.eff$sharpe==max(new.eff$sharpe),]
-
-nperf = port.performance(new.eff.optimal.point)
-
-# Summarizing for final tables
-Market = c(52*mean(baseline.test$R), sqrt(52)*sd(baseline.test$R), 
-           52*mean(baseline.test$R)/
-             (sqrt(52)*sd(baseline.test$R)))
-
-Basic = port.summary(perf)
-Insight = port.summary(nperf)
-
-# Bayesian Mean estimate, Gibbs Sampler, Known Variance
-m = start-end
-mh = as.numeric(dim(hist.returns)[1]) # Adjustment to prior cov
-l0 = 1/mh*hist.cov                      # Historical variance
-m0 = apply(hist.returns,2,mean)  # historical means
-m0 = m0 + abs(m0*.2)  # pos adj. -- Analyst predicts growth
-s = 1/m*Cov                       # sample Cov for mu
-xbar = Means                    # sample means
-
-mun = solve(solve(l0) + m*solve(s)) %*% (solve(l0) %*% 
-              m0 + m*solve(s) %*% xbar)
-ln = solve(solve(l0) + m*solve(s))
-
-gibbs.known.norm = function(burn.in, samp.size,mun, ln)
-{
-  k = length(mun)
-  mu.sample = matrix(0,nrow=samp.size,ncol=k)
-  mus = rep(0,k)
-  betas = NULL
-  for(i in 1:(burn.in + samp.size))
-  {
-    for(j in 1:k)
-    {
-      betas = ln[j,-j] %*% solve(ln[-j,-j])
-      mj = mun[j] + betas %*% (mus[-j] - mun[-j])
-      lj = ln[j,j] - ln[j,-j] %*% solve(ln[-j,-j]) %*% ln[-j,j]
-      
-      mus[j] = rnorm(1,mj,sqrt(lj))
-    }
-    if(i>burn.in)
-    {
-      mu.sample[i-burn.in,] = mus
-    }
-  }
-  return(list(sample=mu.sample, mus=apply(mu.sample,2,mean)))
-}
-
-Bayes.Means = gibbs.known.norm(burn.in=5000,
-                               samp.size=10000,mun,ln)
-b1.eff = make.port(Bayes.Means$mus, Cov,.5,-.5)
-b1.optimal.point = b1.eff[b1.eff$sharpe==max(b1.eff$sharpe),]
-
-# Efficient Frontier and performance
-b1.perf = port.performance(b1.optimal.point)
-Bayes.Mean =port.summary(b1.perf) 
-
-# Restimate Cov and Mus, treat both as unknown, 
-# non-informative prior
-
-# Sum of squares matrix
-S = matrix(0,nrow=dim(port.hist$R)[2],
-           ncol=dim(port.hist$R)[2])
-
-for(i in end:start)
-{
-  S = S + (port.hist$R[i,]-Means) %*% 
-    t(port.hist$R[i,]-Means)
-}
-
-gibbs.unknown.ni = function(burn.in, samp.size,S,m,xbar)
-{
-  mus = rep(0,length(xbar))
-  sigmas = matrix(0, nrow=dim(S)[1], ncol=dim(S)[2])
-  mu.sample = matrix(0,nrow=samp.size,ncol=length(xbar))
-  sigma.sample = matrix(0, nrow=dim(S)[1], ncol=dim(S)[2])
-  
-  for(i in 1:(burn.in + samp.size))
-  {
-    sigmas = riwish(m-1,S)
-    mus = mvrnorm(n=1,mu=xbar,Sigma=sigmas/m)
-      
-    if(i>burn.in)
-    {
-      mu.sample[i-burn.in,] = mus
-      sigma.sample = sigma.sample + sigmas
-    }
-  }
-  return(list(mu.sample=mu.sample, mus=apply(mu.sample,2,mean),
-      sigmas=1/samp.size * sigma.sample))
-}
-
-Bayes.unknown.ni = gibbs.unknown.ni(burn.in=5000,
-                                    samp.size=10000,S,m,Means)
-
-cov.out = Bayes.unknown.ni$sigmas
-row.names(cov.out) = port
-colnames(cov.out) = port
-b2.eff = make.port(Bayes.unknown.ni$mus, cov.out,.5,-.5)
-b2.optimal.point = b2.eff[b2.eff$sharpe==max(b2.eff$sharpe),]
-
-# Efficient Frontier and performance
-b2.perf = port.performance(b2.optimal.point)
-Bayes.ni = port.summary(b2.perf)
-
-# Both Unknown, Informative Prior
-k0 = mh
-m = start-end
-v0 = k0-1
-# m0 = apply(hist.returns,2,mean)  # historical means
-# m0 = m0 + abs(m0*.2) # pos adj. -- Analyst predicts growth
-# l0 = 1/mh*hist.cov  # Historical variance
-# s = 1/m*Cov                       # sample Cov for mu
-# xbar = Means                    # sample means 
-
-mun = k0/(k0 + m) * m0 + m/(k0 + m) *xbar
-kn = k0 + m
-vn = v0 + m
-ln = l0 + S + k0 * m/(k0 + m)* (xbar - m0) %*% t(xbar - m0)
-
-gibbs.unknown.ip = function(burn.in, samp.size,vn,ln,mun,kn)
-{
-  mus = rep(0,length(mun))
-  sigmas = matrix(0, nrow=dim(ln)[1], ncol=dim(ln)[2])
-  mu.sample = matrix(0,nrow=samp.size,ncol=length(mun))
-  sigma.sample = matrix(0, nrow=dim(ln)[1], ncol=dim(ln)[2])
-  
-  for(i in 1:(burn.in + samp.size))
-  {
-    sigmas = riwish(vn,solve(ln))
-    mus = mvrnorm(n=1,mu=mun,Sigma=sigmas/kn)
-    
-    if(i>burn.in)
-    {
-      mu.sample[i-burn.in,] = mus
-      sigma.sample = sigma.sample + sigmas
-    }
-  }
-  return(list(mu.sample=mu.sample, mus=apply(mu.sample,2,mean),
-              sigmas=1/samp.size * sigma.sample))
-}
-  
-Bayes.unknown.ip = gibbs.unknown.ip(burn.in=5000, 
-                      samp.size=10000,vn,ln,mun,kn)
-
-cov.out = Bayes.unknown.ip$sigmas
-row.names(cov.out) = port
-colnames(cov.out) = port
-b3.eff = make.port(Bayes.unknown.ip$mus, cov.out,.5,-.5)
-b3.optimal.point = b3.eff[b3.eff$sharpe==max(b3.eff$sharpe),]
-
-# Efficient Frontier and performance
-b3.perf = port.performance(b3.optimal.point)
-Bayes.ip = port.summary(b3.perf)
-
-# Final Comparison
-compare = rbind(Market=Market, 
-                Basic= Basic, 
-                Insight = Insight, 
-                "Bayesian, Unkown Mean" = Bayes.Mean,
-                "Bayesian, Uninformative Prior" = Bayes.ni,
-                "Bayesian, Informative Prior" = Bayes.ip)
-
-compare = round(100*compare,2)
-colnames(compare) = c("Annualized Return", "Annualized Risk", 
-                      "Annualized Sharpe")
-
-# Comparing Weights
-final.weights = rbind(Baseline= eff.optimal.point, 
-      Insight = new.eff.optimal.point, 
-      "Bayesian, Unkown Mean" = b1.optimal.point,
-      "Bayesian, Uninformative Prior" = b2.optimal.point,
-      "Bayesian, Informative Prior" = b3.optimal.point)
-
-# Cleaning up
-final.weights = round(100*final.weights[,1:8],2)
-
-# Simulated probabilities
-market = rev(baseline.test$R)
-market[1] = baseline.test$R[1]+1
-market = cumsum(market)
-final.returns = data.frame(Market = market,
-         b1 = b1.perf$tret,
-         b2 = b2.perf$tret,
-         b3 = b3.perf$tret,
-         naive = perf$tret,
-         insight = nperf$tret, 
-         Date = rev(as.Date(row.names((baseline.test$R)))))
-
-ret.out = melt(final.returns, id.vars="Date")
-
-# Simulating distributions of returns calculating probabilities
-# Weights-matrix
-w.matrix = t(rbind(eff.optimal.point[1:8],
-                 new.eff.optimal.point[1:8],
-                 b1.optimal.point[1:8],
-                 b2.optimal.point[1:8],
-                 b3.optimal.point[1:8]))
-
-colnames(w.matrix) = row.names(final.weights)
-
-sim.means = c(New.Means, Market=mean(baseline.test$R))
-sim.Cov = cov(cbind(port.test$R, Market=baseline.test$R))
-
-# 5000 Samples
-n = 5000
-m = dim(port.test$R)[1]
-out= matrix(0, nrow = n, ncol = dim(w.matrix)[2]+1)
-
-for(i in 1:n)
-{
-  sample = rmvnorm(m,sim.means,sim.Cov)
-  market = sample[,9]
-  market[1] = market[1] + 1
-  ports = sample[,-9]
-  ports = ports %*% w.matrix
-  ports[1,] = ports[1,] +1
-  out[i,] = c(apply(ports,2,sum),Market=sum(market))
-}
-
-# Sample Stats
-sim.r.means = apply(out,2,mean)
-names(sim.r.means) = c(colnames(w.matrix),"Market")
-sim.r.cov = cov(out)
-colnames(sim.r.cov) = c(colnames(w.matrix),"Market")
-row.names(sim.r.cov) = c(colnames(w.matrix),"Market")
-sd.r = sqrt(diag(sim.r.cov))
-
-# Calculate Probs
-# P(X > Y) = P(Y - X < 0)
-probs = rep(0, dim(out)[2]-1)
-names(probs) = c(colnames(w.matrix))
-for(i in 1:(dim(out)[2]-1))
-{
-  diff = c(-1,1)
-  d = c(i,6)
-  m = sim.r.means[d]
-  v = sim.r.cov[d,d]
-  m1 = m %*% diff
-  v1 = diff %*% v %*% diff
-  probs[i] = pnorm(0,mean=m1,sd=sqrt(v1))
-}
-
-# Distribution plots
-colnames(out) = c(colnames(w.matrix),"Market")
-dist.plots = melt(out)
-df.out = as.data.frame(out)
-name = colnames(out)[1]
+<<finalcode,echo=FALSE,results='hide',message=FALSE,warning=FALSE,error=FALSE,fig.show='hide'>>=
+setwd('~/Git/Bayesian_Portfolio_Paper/Paper/')
+source('../Code/1-final-key.R')
 @
-
 
 \maketitle
 
@@ -618,20 +182,11 @@ The matrix $\bm{A} $ and vector $\bm{b}$ allow for the creation of the three con
 
 I implemented this problem in \texttt{R} using the \texttt{quadprog} package and the example of Matuszak (2013).\cite{matu13} With a loop, you can generate an efficient portfolio across a range of risk levels. The result is the following efficient frontier (see Figure~\ref{fig:frontier}), and I've included a basic one below. This plot illustrates the trade-off between risk (the portfolio's standard deviation) and return in a given portfolio. It was chosen using the basic method of calculating means and variances from the last three months of weekly returns (see section 3 for the particular assets). While every asset allocation along the frontier can be considered optimal, most analysts select the portfolio with the highest Sharpe ratio as a rule of thumb.
 
-\begin{figure}[H]
-    \centering
-<<frontier, echo=FALSE,fig.width=5, fig.height=2.75, fig.keep='last', message=FALSE, tidy=FALSE>>=
+<<frontier, echo=FALSE,fig.width=5, fig.height=2.75, fig.keep='last', message=FALSE, fig.align='center', fig.cap='Efficient portfolio frontier and optimal allocation point, using assets described below and the classical method of portfolio optimization.'>>=
 # Make Naive Port
-eff = make.port(Means, Cov,.5,-.5)
-eff.optimal.point = eff[eff$sharpe==max(eff$sharpe),]
-
-# Efficient Frontier and performance
-g = eff.plot(eff, eff.optimal.point)
-g + ggtitle("Efficient Frontier and Optimal Portfolio") 
+print(p.eff.naive)
 @
-    \caption{Efficient portfolio frontier and optimal allocation point.}
-    \label{fig:frontier}
-\end{figure}
+
 
 \subsection{Bayesian Inference with Multinormal Distribution}
 
@@ -783,18 +338,9 @@ In particular, extremely large negative contributions indicate a misallocation. 
 
 \section{A Motivating Example}
 
-\begin{figure}[H]
-    \centering
-<<sixmonth, echo=FALSE,fig.width=5, fig.height=4, fig.keep='last', message=FALSE, tidy=FALSE>>=
-
-ggplot(hist.plot,aes(x=Date,y=value, group=variable,colour=variable)) +
-  geom_line() + ggtitle("Cumulative Returns") +
-  labs(y="Cumulative Return") + scale_colour_discrete(name="Ticker Name") +
-  theme(legend.position="bottom") + guides(col = guide_legend(nrow = 2))
+<<sixmonth, echo=FALSE,fig.width=5, fig.height=4, fig.keep='last', message=FALSE, fig.pos='H', fig.cap="Indexed stock returns for the period of 07-18-2011 to 12-27-2011.">>=
+print(p.returns)
 @
-    \caption{Indexed stock returns for the period of 07-18-2011 to 12-27-2011.}
-    \label{fig:sixmonth}
-\end{figure}
 
 Consider the case of a hypothetical financial analyst at the end of 2011. The last year has been pretty rough, especially the last six months. High volatility in the market was matched with low returns, and many fund managers perform poorly in this sort of environment. See Figure~\ref{fig:sixmonth}. Nonetheless, with the beginning of the new year, there is broad consensus in future stock growth. This turns out to be correct, as the last few years have witnessed one of the strongest bull markets in recent history.
 
@@ -815,22 +361,10 @@ Given this environment, our analyst would like to build a new portfolio consisti
 
 The performance of each of these assets is summarized in Table~\ref{tab:returns}, which shows annualized mean returns and annualized standard deviations. It also shows each asset's annualized Sharpe Ratio. The relatively high frequency of Sharpe ratios with a value less than one indicates difficult market conditions. It also tends to be a sign of market turbulence when the risk-free asset has the highest Sharpe ratio. 
 
-\begin{table}
-    \centering
-    \resizebox{\columnwidth}{!}{%
-\begin{tabular}{lrrrrrrrr}
-  \hline
- & FOX & MSFT & MMM & HSY & GE & GOOGL & AMZN & SHY \\ 
-  \hline
-Annualized Return & 34.03 & -0.48 & -25.81 & 22.45 & 5.25 & 23.97 & -33.45 & 0.93 \\ 
-  Annualized St. Dev. & 36.54 & 26.21 & 31.37 & 17.94 & 38.61 & 38.78 & 48.46 & 0.55 \\ 
-  Sharpe Ratio & 0.93 & -0.02 & -0.82 & 1.25 & 0.14 & 0.62 & -0.69 & 1.70 \\ 
-   \hline
-\end{tabular} %
-    }
-\caption{Expected returns, standard deviations and Sharpe ratios for the candidate assets for the various portfolios to be shown below.}
-    \label{tab:returns}
-\end{table}
+<<t1, echo=FALSE,results='asis'>>=
+t1 = xtable(stocks.table, label = 'tab:returns', digits = 2, caption = 'Historical average returns, standard deviations and Sharpe ratios for the candidate assets over previous six months.')
+print(t1, scalebox=0.85)
+@
 
 Our analyst believes that this is a somewhat representative portfolio for the American economy as a whole, providing a good opportunity for diversification. But it's also worth acknowledging that even this selection of assets is significantly smaller than an index like the \texttt{S\&P 500} or the \texttt{Dow Jones Industrial Average}. She will use the former as a benchmark for portfolio performance.
 
@@ -850,42 +384,15 @@ The annualized expected returns, standard deviations and Sharpe ratios for each 
 
 \subsection{Bayesian Portfolios}
 
-\begin{table}
-    \centering
-\begin{tabular}{lrrrr}
-  \hline
- & Expected Return & Risk & Sharpe Ratio \\ 
-  \hline
-Market & 19.08 & 10.93 & 174.60\\ 
-  Basic & 7.45 & 15.72 & 47.40 \\ 
-  Foresight & 15.67 & 5.78 & 271.11 \\ 
-  Unknown Mean & 8.50 & 13.76 & 61.76 \\ 
-  Noninformative Prior & 7.46 & 15.66 & 47.62 \\ 
-  Informative Prior & 32.10 & 14.04 & 228.65 \\ 
-   \hline
-\end{tabular}
-    \caption{Annualized portfolio return and risk profiles for each of the estimation methods considered. The final three portfolios use Bayesian estimates.}
-    \label{tab:results}
-\end{table}
+<<t2, echo=FALSE,results='asis'>>=
+t2 = xtable(compare, align= 'lrrr', label = 'tab:results', digits = 2, caption = 'Annualized portfolio return and risk profiles for each of the estimation methods considered. The final three portfolios use Bayesian estimates.')
+print(t2)
+@
 
-\begin{table}
-    \centering
-        \resizebox{\columnwidth}{!}{%
-\begin{tabular}{lrrrrrrrr}
-  \hline
- & FOX & MSFT & MMM & HSY & GE & GOOGL & AMZN & SHY \\ 
-  \hline
-Baseline & 25.12 & 45.08 & -50.00 & 50.00 & -12.09 & 27.90 & -36.01 & 50.00 \\ 
-  Foresight & 11.40 & 0.89 & 19.39 & 16.76 & -2.91 & 3.88 & 0.59 & 50.00 \\ 
-  Unknown Mean & 19.48 & 39.83 & -37.24 & 46.95 & -15.75 & 26.08 & -29.36 & 50.00 \\ 
-  Noninformative Prior & 24.93 & 45.20 & -50.00 & 50.00 & -11.92 & 27.44 & -35.65 & 50.00 \\ 
-  Informative Prior & 14.81 & 11.19 & 13.11 & 5.93 & 15.24 & 17.47 & 22.26 & -0.02 \\ 
-   \hline
-\end{tabular}%
-    }
-    \caption{Asset allocations for each of the portfolios in this project. The final three portfolios use Bayesian methods.}
-    \label{tab:weights}
-\end{table}
+<<t3, echo=FALSE,results='asis'>>=
+t3 = xtable(final.weights, align = 'lrrrrrrrr', label = 'tab:weights', digits = 2, caption = 'Asset allocations for each of the portfolios in this project. The final three portfolios use Bayesian methods.')
+print(t3, scalebox=0.85)
+@
 
 From the very beginning, we can get a sense of the factors contributing to the different performances of the basic and insight models. The latter has one asset that suffers from an extreme allocation, while the baseline model has three in addition to another model that is quite close to the limit. Financial theory generally predicts that portfolio performance improves with diversification, all other things being equal. Avoiding extreme allocations would be a plus.
 
@@ -893,20 +400,9 @@ As an alternative model, the first Bayesian portfolio was generated using an unk
 
 Following the model set out by Gelman(2013), \cite{gelman13} the unknown mean model returns a parameter that is hardly distinguishable from that of the basic Markowitz model. This is a good thing in most circumstances, but not a particular benefit here. Rachev (2008) suggests solving this issue by readjusting weights on the prior and the data based on investor confidence. \cite{rachev08} Since other estimation options are available here, I just moved on.
 
-\begin{figure}[t]
-    \centering
-<<results, echo=FALSE,fig.width=5, fig.height=4, fig.keep='last', message=FALSE, tidy=FALSE>>=
-ggplot(ret.out, aes(x=Date,y=value, group=variable, colour =variable)) + 
-  geom_line() + scale_colour_discrete(name="Test Portfolio",
-                       labels=c("Market","Unknown Mean", "NonInformative Prior",
-                                "Informative Prior", "Baseline","Foresight")) +
-  ggtitle("Cumulative Returns for Portfolios") +
-  theme(legend.position="bottom") + guides(col = guide_legend(nrow = 2)) +
-  labs(y="Cumulative Return")
+<<cumret, echo=FALSE,fig.width=5, fig.height=4, fig.keep='last', message=FALSE, fig.cap='Cumulative returns for each model portfolio, as tested against asset data from 01-09-2012 to 12-30-2013.', fig.pos='t'>>=
+print(p.cumret)
 @
-    \caption{Cumulative returns for each model portfolio, as tested against asset data from 01-09-2012 to 12-30-2013.}
-    \label{fig:cumret}
-\end{figure}
 
 The same issues appeared with the model relying on a noninformative prior. Once again, this should be expected given the mathematical and theoretical basis of noninformative priors, but this is not the desired result. Moreover, little can be done to add a subjective ``correction'' to the model or gain any benefit from general knowledge. Strictly speaking, that is the point of a noninformative prior. 
 
@@ -916,110 +412,43 @@ While the final Bayesian model still does not outperform the foresight portfolio
 
 The gains in performance come through avoiding extreme allocations while favoring generally risky assets over the safer risk-free asset. In fact, this is the only portfolio that does not take the maximum allocation possible for the risk-free asset. Although the risk-free asset had the highest Sharpe ratio during the six months of data available to the analyst, this is not the general case. It certainly wasn't true for the following two years (see Table~\ref{tab:test}), and it is not sound financial thinking to favor risk-free assets during bull markets.
 
-\begin{table}
-    \centering
-        \resizebox{\columnwidth}{!}{%
-\begin{tabular}{lrrrrrrrr}
-  \hline
- & FOX & MSFT & MMM & HSY & GE & GOOGL & AMZN & SHY \\ 
-  \hline
-Annualized Return & 0.40 & 0.20 & 0.29 & 0.27 & 0.25 & 0.30 & 0.43 & 0.00 \\ 
-  Annualized St. Dev. & 0.18 & 0.22 & 0.13 & 0.13 & 0.17 & 0.22 & 0.28 & 0.00 \\ 
-  Sharpe Ratio & 2.19 & 0.88 & 2.22 & 1.99 & 1.52 & 1.32 & 1.55 & 0.59 \\ 
-   \hline
-\end{tabular}%
-    }
-    \caption{Expected returns, standard deviations and Sharpe ratios for the candidate assets for the various portfolios over the test period. The data used for estimating these statistics cover 01-09-2012 to 12-30-2013.}
-    \label{tab:test}
-\end{table}
+<<t4, echo=FALSE,results='asis'>>=
+t4 = xtable(final.weights, align = 'lrrrrrrrr', label = 'tab:test', digits = 2, caption = 'Expected returns, standard deviations and Sharpe ratios for the candidate assets for the various portfolios over the test period. The data used for estimating these statistics cover 01-09-2012 to 12-30-2013.')
+print(t4, scalebox=0.85)
+@
 
 \subsection{Validation}
 
 Sharpe ratios are a useful tool for assessing overall performance, but they aren't the only tool available. When looking at these ratios, it's worthwhile to keep in mind that a single market outcome is not generalizable and previous market performance is not a guarantee for future performance. More intuitively, this is an issue of simulation. We can't observe more than one stock market, but we can at least generate possible market outcomes given a set of parameters.
 
-\begin{table}
-    \centering
-\begin{tabular}{lrrr}
-  \hline
- & Return & St. Dev. & P $>$ Market \\ 
-  \hline
-Baseline & 1.15 & 0.22 & 0.19 \\ 
-  Insight & 1.31 & 0.08 & 0.26 \\ 
-  Unknown Mean & 1.17 & 0.20 & 0.19 \\ 
-  Noninformative Prior & 1.15 & 0.22 & 0.19 \\ 
-  Informative Prior & 1.64 & 0.20 & 0.99 \\ 
-  Market & 1.38 & 0.16 & 0.00 \\ 
-   \hline
-\end{tabular}
-    \caption{Starting from the left, the total expected return after two years in the simulation indexed with $t_0 = 1$. The is followed by the standard deviation of these total returns and the probability that the portfolio will outperform the market after two years. This probability assumes return normality and depends on the means and standard deviations in the table.}
-    \label{tab:simulations}
-\end{table}
+<<t5, echo=FALSE,results='asis'>>=
+t5 = xtable(validate.table, align = 'lrrr', label = 'tab:simulations', digits = 2, caption = 'Starting from the left, the total expected return after two years in the simulation indexed with $t_0 = 1$. The is followed by the standard deviation of these total returns and the probability that the portfolio will outperform the market after two years. This probability assumes return normality and depends on the means and standard deviations in the table.')
+print(t5)
+@
 
 If the underlying assumptions given the normality of the returns is correct, the informative prior will outperform the market 98.93\% of the time over this investment horizon. This is much better than the probability of the portfolio with foresight beating the market. That said, the much higher returns of the informative prior come through the willingness to accept more risk.
 
-We can visualize these relationships with a series of plots. Overlays of the distributions are nice in that they allow for easy comparisons of the portfolio and the market. In particular, since the distributions are all roughly normal, overlays allow for easy comparisons of center and spread. On the other hand, the overlays cannot give a sense of the correlation between the two distributions and the final calculation of inequalities within the probability statements. See Figure~\ref{fig:probsinform} for the distribution plots for the Bayesian portfolio with an informative prior.
+We can visualize these relationships with a series of plots. Overlays of the distributions are nice in that they allow for easy comparisons of the portfolio and the market. In particular, since the distributions are all roughly normal, overlays allow for easy comparisons of center and spread. On the other hand, the overlays cannot give a sense of the correlation between the two distributions and the final calculation of inequalities within the probability statements. See Figure~\ref{fig:probsdist} and Figure~\ref{fig:probsdens} for the distribution plots for the Bayesian portfolio with an informative prior.
 
-\begin{figure}[H]
-<<dist-pair-inform, echo=FALSE, fig.width=5, fig.height=4, out.width='.49\\linewidth', fig.show='hold'>>=
-colnames(df.out)[5] = "IP"
-ggplot(df.out, aes(y=IP, x=Market)) + geom_point(alpha=.5) + 
-  geom_density2d() + 
-  annotate("segment", x=0.75,y=0.75,xend=2,yend=2, colour="blue") +
-  ylab("Bayesian, Informative Prior") + 
-  ggtitle("Joint Distribution") + 
-  theme(legend.position="bottom")
-
-name = colnames(out)[5]
-plots = dist.plots[dist.plots$Var2 %in% c(name,"Market"),]
-ggplot(plots, aes(x=value, fill=Var2)) + 
-  geom_density(alpha=.3) +
-  scale_fill_discrete(name="Portfolio") + 
-  ggtitle("Densities") + 
-  theme(legend.position="bottom")
+<<probsdist, echo=FALSE, fig.width=5, fig.height=3, fig.keep = 'hold', out.width='\\linewidth', fig.cap='A joint density plot for the market index and the Bayesian portfolio with an informative prior. Contour lines and annotation for where $Y > X$ are included.'>>=
+print(p.ipdist)
 @
-\caption{On the left: A joint density plot for the market index and the Bayesian portfolio with an informative prior. Contour lines and annotation for where $Y > X$ are included. On the right: An overlay of the two densities.}
-\label{fig:probsinform}
-\end{figure}
+
+<<probsdens, echo=FALSE, fig.width=5, fig.height=3, fig.keep = 'hold', out.width='\\linewidth', fig.cap='An overlay of the two densities for the market index and the Bayesian portfolio with an informative prior.'>>=
+print(p.ipdens)
+@
 
 One question remains about these results: What drives this improved performance? If we're interested in generalizability, it would be worrisome if these results came through the performance of only a single asset. To be blunt, it would be the result of luck, not improved analytic techniques.
 
-\begin{table}[ht]
-\centering
-\resizebox{\columnwidth}{!}{%
-\begin{tabular}{lrrrrrrrr}
-  \hline
- & AMZN & FOX & GE & GOOGL & HSY & MMM & MSFT & SHY \\ 
-  \hline
-Baseline & 8.96 & -2.79 & 1.16 & -2.80 & -4.24 & 4.56 & -3.82 & -0.02 \\ 
-  Foresightsight & 0.02 & 0.29 & -0.05 & 0.07 & 0.28 & 0.36 & 0.01 & 0.01 \\ 
-  Unkown Mean & 0.49 & -0.26 & 0.37 & -0.11 & 0.29 & 0.53 & -0.29 & -0.01 \\ 
-  Noninformative Prior & 0.12 & -0.47 & 0.13 & 0.15 & -0.47 & 0.80 & 0.76 & -0.01 \\ 
-  Informative Prior & 0.29 & 0.19 & 0.12 & 0.16 & 0.05 & 0.12 & 0.07 & -0.00 \\ 
-   \hline
-\end{tabular}%
-    }
-    \caption{Mean asset contributions to 5,000 simulated portfolio returns for the five portfolios examined in this project. The final three rows refer to portfolios constructed using Bayesian estimates of the parameters.}
-    \label{tab:contmeans}
-\end{table}
+<<t6, echo=FALSE,results='asis'>>=
+t6 = xtable(t(cont.means), align = 'lrrrrrrrr', label = 'tab:contmeans', digits = 2, caption = 'Mean asset contributions to 5,000 simulated portfolio returns for the five portfolios examined in this project. The final three rows refer to portfolios constructed using Bayesian estimates of the parameters.')
+print(t6, scalebox = .85)
+@
 
-\begin{table}[h]
-\centering
-\resizebox{\columnwidth}{!}{%
-\begin{tabular}{lrrrrrrrr}
-  \hline
- & AMZN & FOX & GE & GOOGL & HSY & MMM & MSFT & SHY \\ 
-  \hline
-Baseline & 720.01 & 228.97 & 87.10 & 264.76 & 360.50 & 368.80 & 318.29 & 1.37 \\ 
-  Foresight & 0.01 & 0.07 & 0.02 & 0.04 & 0.08 & 0.08 & 0.01 & 0.01 \\ 
-Unkown Mean & 100.23 & 52.99 & 36.11 & 51.27 & 89.71 & 102.23 & 53.32 & 2.21 \\ 
-Noninformative Prior & 146.76 & 82.96 & 27.74 & 57.01 & 86.63 & 119.31 & 77.86 & 0.93 \\ 
-Informative Prior & 0.40 & 0.18 & 0.10 & 0.18 & 0.12 & 0.11 & 0.14 & 0.00 \\ 
-   \hline
-\end{tabular}%
-    }
-    \caption{Standard deviation of asset contributions to 5,000 simulated portfolio returns for the five portfolios examined in this project. The final three rows refer to portfolios constructed using Bayesian estimates of the parameters.}
-    \label{tab:contsds}
-\end{table}
+<<t7, echo=FALSE,results='asis'>>=
+t7 = xtable(t(cont.sds), align = 'lrrrrrrrr', label = 'tab:contsds', digits = 2, caption = 'Standard deviation of asset contributions to 5,000 simulated portfolio returns for the five portfolios examined in this project. The final three rows refer to portfolios constructed using Bayesian estimates of the parameters.')
+print(t7, scalebox = .85)
+@
 
 Looking at contributions and contribution standard deviations (see Tables~~\ref{tab:contmeans} and~\ref{tab:contsds}), we can see that the foresight and informative prior portfolios show similar results, with evenly distributed contributions among the chosen assets and relatively low variances. The same cannot be said about the other portfolios. The baseline portfolio, in particular, derives the overwhelming majority of its total return from the performance of a single asset. This is not a prudent decision.
 
@@ -1036,7 +465,6 @@ Bayesian methodologies would be useful to financial analysts in Kazakhstan, as i
 What can be done? The institutions needed for better financial data might not be developed for a long time, but there is a large amount of information available from local experts, businessmen and politicians. A Bayesian analyst would seize the opportunity to incorporate this information through informative priors. As Kazakhstan has experienced several periods of high volatility and uncertainty, like the example given in this paper, informative priors have the potential to improve the performance of portfolios. 
 
 For people familiar with work in business in Kazakhstan, these recommendations may seem like common sense. Most would agree that personal connections and word-of-mouth channels are critical to understanding the local business climate. Nonetheless, these heuristics often lack a reliable rigorous framework, as is the case with ad hoc techniques for building portfolios. In that regard, Bayesian methodologies encourage a broader selection of knowledge along with robust mathematical techniques.
-
 
 \begin{thebibliography}{99}
         \bibitem{best91} Best, M. J., \& Grauer, R. R. (1991). On the sensitivity of mean-variance-efficient portfolios to changes in asset means: some analytical and computational results. \textit{Review of Financial Studies}, 4(2), 315-342.

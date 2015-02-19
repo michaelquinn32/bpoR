@@ -90,3 +90,6 @@ for(i in 1:(dim(out)[2]-1))
   v1 = diff %*% v %*% diff
   probs[i] = pnorm(0,mean=m1,sd=sqrt(v1))
 }
+
+# Validation results
+validate.table = cbind(Return = sim.r.means, Risk = sd.r, "P $>$ Market " = c(probs,NA))

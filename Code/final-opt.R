@@ -70,7 +70,7 @@ eff.plot=function(eff, eff.optimal.point)
                          round(eff.optimal.point$Exp.Return*100, digits=4),"%\nSharpe: ",
                          round(eff.optimal.point$sharpe*100, digits=2), "%", sep=""),
              hjust=0, vjust=1.2) +
-    ggtitle("Efficient Frontier and Optimal Portfolio, Basic Parameters") +
+    ggtitle("Efficient Frontier and Optimal Portfolio") +
     labs(x="Risk (standard deviation of portfolio)", y="Return")
     return(p)
 }

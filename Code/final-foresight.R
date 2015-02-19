@@ -19,11 +19,7 @@ new.eff = make.port(New.Means, New.Cov,.5,-.5)
 new.eff.optimal.point = new.eff[new.eff$sharpe==max(new.eff$sharpe),]
 
 nperf = port.performance(new.eff.optimal.point)
-lines(x=nperf$tlab, y =nperf$tret, type='l', col=3)
-legend("topleft", legend = c("S&P 500", "Basic Portfolio", "Foresight Portfolio"), 
-       lty=1, col=c(1,2,3))
-
-p = eff.plot(eff, new.eff.optimal.point); print(p)
+p.foresight = eff.plot(eff, new.eff.optimal.point); print(p.foresight)
 
 # Summarizing for final tables
 Market = c(52*mean(baseline.test$R), sqrt(52)*sd(baseline.test$R), 

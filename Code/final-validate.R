@@ -92,4 +92,4 @@ for(i in 1:(dim(out)[2]-1))
 }
 
 # Validation results
-validate.table = cbind(Return = sim.r.means, Risk = sd.r, "P $>$ Market " = c(probs,NA))
+validate.table = cbind(Return = sim.r.means, Risk = sd.r, "P > Market " = c(probs,NA))

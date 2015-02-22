@@ -131,7 +131,7 @@ Let’s define a portfolio p as the weighted average over a vector consisting of
     \bm{X} = \left( \bm{X}_1, \dots , \bm{X}_k \right)^T
 \end{flalign}
 
-Assume this vector follows multivariate normal distribution that depends on expected individual asset returns $\bm{\mu}$ and variance $\bm{\Sigma}$.\footnote{This is a simplifying assumption that does not hold in all market conditions. See Mandelbrot (2004).\cite{mandel04} Plenty of research, including that of Markowitz, has shown that an optimal portfolio can still be found after relaxing this assumption. See (Rachev, Ortobelli, and Schwartz, 2004).\cite{rachev04}}
+Assume this vector follows multivariate normal distribution that depends on expected individual asset returns $\bm{\mu}$ and variance $\bm{\Sigma}$.\footnote{This is a simplifying assumption that does not hold in all market conditions. See Mandelbrot (2004).\cite{mandel04} Plenty of research, including that of Markowitz, has shown that an optimal portfolio can still be found after relaxing this assumption. See (Ortobelli, Rachev and Schwartz, 2002).\cite{rachev04}}
 
 \begin{flalign}
     \bm{X} \sim N \left( \bm{\mu}, \bm{\Sigma} \right)
@@ -340,7 +340,7 @@ If, instead, we want to employ a non-informative prior, the process only needs a
 
 \subsection{Gibbs Sampling Algorithms}
 
-A Gibbs sampler is a class of Markov Chain Monte Carlo (MCMC) that utilizes conditional probability distributions (German and German, 1984).\cite{german84} This is an important feature when we have distributions similar to the ones described above. In each of the three sampling cases, we will be working with marginal distributions that are conditioned on other parameters. In the case of the unknown variance, we condition on the other means. When the means and the variances are unknown, we condition the variance on the data and the mean on the variance.
+A Gibbs sampler is a class of Markov Chain Monte Carlo (MCMC) that utilizes conditional probability distributions (Geman and Geman, 1984).\cite{geman84} This is an important feature when we have distributions similar to the ones described above. In each of the three sampling cases, we will be working with marginal distributions that are conditioned on other parameters. In the case of the unknown variance, we condition on the other means. When the means and the variances are unknown, we condition the variance on the data and the mean on the variance.
 
 In general, the Gibbs sampling algorithm is as follows. Suppose that $x$ is a vector of random variables, and $\bm{x} = \left( x_1, \dots , x_d \right)$. The sample will ``update'' iteratively, so that at time $t+1$ you will have $\bm{x}^{(t)} = \left( x_1^{(t)}, \dots , x_d^{(t)} \right)$.
 
@@ -420,7 +420,7 @@ Given this environment, our analyst would like to build a new portfolio consisti
 The performance of each of these assets is summarized in Table~\ref{tab:returns}, which shows annualized mean returns and annualized standard deviations. It also shows each asset's annualized Sharpe Ratio. The relatively high frequency of Sharpe ratios with a value less than one indicates difficult market conditions. It also tends to be a sign of market turbulence when the risk-free asset has the highest Sharpe ratio. 
 
 % latex table generated in R 3.1.2 by xtable 1.7-4 package
-% Wed Feb 18 18:39:24 2015
+% Sun Feb 22 17:38:04 2015
 \begin{table}[ht]
 \centering
 \scalebox{0.85}{
@@ -428,8 +428,8 @@ The performance of each of these assets is summarized in Table~\ref{tab:returns}
   \hline
  & FOX & MSFT & MMM & HSY & GE & GOOGL & AMZN & SHY \\ 
   \hline
-Annualized Return & 34.10 & -0.49 & -25.82 & 22.44 & 5.21 & 23.97 & -33.45 & 0.91 \\ 
-  Annualized St. Dev. & 36.48 & 26.19 & 31.37 & 17.95 & 38.63 & 38.78 & 48.46 & 0.56 \\ 
+Annualized Return & 34.10 & -0.49 & -25.82 & 22.44 & 5.18 & 23.97 & -33.45 & 0.91 \\ 
+  Annualized St. Dev. & 36.48 & 26.19 & 31.37 & 17.95 & 38.58 & 38.78 & 48.46 & 0.56 \\ 
   Sharpe Ratio & 0.93 & -0.02 & -0.82 & 1.25 & 0.13 & 0.62 & -0.69 & 1.63 \\ 
    \hline
 \end{tabular}
@@ -458,7 +458,7 @@ The annualized expected returns, standard deviations and Sharpe ratios for each 
 \subsection{Bayesian Portfolios}
 
 % latex table generated in R 3.1.2 by xtable 1.7-4 package
-% Wed Feb 18 18:39:24 2015
+% Sun Feb 22 17:38:04 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{lrrr}
@@ -466,11 +466,11 @@ The annualized expected returns, standard deviations and Sharpe ratios for each 
  & Expected Return & Risk & Annualized Sharpe \\ 
   \hline
 Market & 19.08 & 10.93 & 174.60 \\ 
-  Basic & 7.48 & 15.75 & 47.48 \\ 
-  Foresight & 15.69 & 5.78 & 271.48 \\ 
-  Unkown Mean & 8.49 & 13.85 & 61.27 \\ 
-  Noninformative Prior & 7.64 & 15.62 & 48.90 \\ 
-  Informative Prior & 32.13 & 14.05 & 228.63 \\ 
+  Basic & 7.47 & 15.77 & 47.40 \\ 
+  Foresight & 15.69 & 5.78 & 271.45 \\ 
+  Unkown Mean & 8.49 & 13.86 & 61.23 \\ 
+  Noninformative Prior & 7.50 & 15.72 & 47.76 \\ 
+  Informative Prior & 32.12 & 14.04 & 228.74 \\ 
    \hline
 \end{tabular}
 \caption{Annualized portfolio return and risk profiles for each of the estimation methods considered. The final three portfolios use Bayesian estimates.} 
@@ -479,7 +479,7 @@ Market & 19.08 & 10.93 & 174.60 \\
 
 
 % latex table generated in R 3.1.2 by xtable 1.7-4 package
-% Wed Feb 18 18:39:24 2015
+% Sun Feb 22 17:38:04 2015
 \begin{table}[ht]
 \centering
 \scalebox{0.85}{
@@ -487,11 +487,11 @@ Market & 19.08 & 10.93 & 174.60 \\
   \hline
  & FOX & MSFT & MMM & HSY & GE & GOOGL & AMZN & SHY \\ 
   \hline
-Baseline & 25.37 & 45.21 & -50.00 & 50.00 & -12.39 & 27.93 & -36.11 & 50.00 \\ 
-  Foresight & 11.54 & 0.95 & 19.49 & 16.70 & -3.15 & 3.87 & 0.60 & 50.00 \\ 
-  Unkown Mean & 19.70 & 40.29 & -37.46 & 46.75 & -15.98 & 26.24 & -29.53 & 50.00 \\ 
-  Noninformative Prior & 25.65 & 44.46 & -50.00 & 50.00 & -12.38 & 27.95 & -35.69 & 50.00 \\ 
-  Informative Prior & 14.83 & 11.21 & 13.09 & 5.90 & 15.16 & 17.43 & 22.41 & -0.02 \\ 
+Baseline & 25.40 & 45.30 & -50.00 & 50.00 & -12.45 & 27.88 & -36.13 & 50.00 \\ 
+  Foresight & 11.52 & 0.95 & 19.47 & 16.69 & -3.09 & 3.86 & 0.60 & 50.00 \\ 
+  Unkown Mean & 19.78 & 40.33 & -37.47 & 46.76 & -15.99 & 26.17 & -29.58 & 50.00 \\ 
+  Noninformative Prior & 25.52 & 44.88 & -49.79 & 50.00 & -12.23 & 27.84 & -36.22 & 50.00 \\ 
+  Informative Prior & 14.81 & 11.19 & 13.15 & 5.92 & 15.17 & 17.47 & 22.33 & -0.02 \\ 
    \hline
 \end{tabular}
 }
@@ -523,7 +523,7 @@ While the final Bayesian model still does not outperform the foresight portfolio
 The gains in performance come through avoiding extreme allocations while favoring generally risky assets over the safer risk-free asset. In fact, this is the only portfolio that does not take the maximum allocation possible for the risk-free asset. Although the risk-free asset had the highest Sharpe ratio during the six months of data available to the analyst, this is not the general case. It certainly wasn't true for the following two years (see Table~\ref{tab:test}), and it is not sound financial thinking to favor risk-free assets during bull markets.
 
 % latex table generated in R 3.1.2 by xtable 1.7-4 package
-% Wed Feb 18 18:39:24 2015
+% Sun Feb 22 17:38:05 2015
 \begin{table}[ht]
 \centering
 \scalebox{0.85}{
@@ -531,11 +531,11 @@ The gains in performance come through avoiding extreme allocations while favorin
   \hline
  & FOX & MSFT & MMM & HSY & GE & GOOGL & AMZN & SHY \\ 
   \hline
-Baseline & 25.37 & 45.21 & -50.00 & 50.00 & -12.39 & 27.93 & -36.11 & 50.00 \\ 
-  Foresight & 11.54 & 0.95 & 19.49 & 16.70 & -3.15 & 3.87 & 0.60 & 50.00 \\ 
-  Unkown Mean & 19.70 & 40.29 & -37.46 & 46.75 & -15.98 & 26.24 & -29.53 & 50.00 \\ 
-  Noninformative Prior & 25.65 & 44.46 & -50.00 & 50.00 & -12.38 & 27.95 & -35.69 & 50.00 \\ 
-  Informative Prior & 14.83 & 11.21 & 13.09 & 5.90 & 15.16 & 17.43 & 22.41 & -0.02 \\ 
+Baseline & 25.40 & 45.30 & -50.00 & 50.00 & -12.45 & 27.88 & -36.13 & 50.00 \\ 
+  Foresight & 11.52 & 0.95 & 19.47 & 16.69 & -3.09 & 3.86 & 0.60 & 50.00 \\ 
+  Unkown Mean & 19.78 & 40.33 & -37.47 & 46.76 & -15.99 & 26.17 & -29.58 & 50.00 \\ 
+  Noninformative Prior & 25.52 & 44.88 & -49.79 & 50.00 & -12.23 & 27.84 & -36.22 & 50.00 \\ 
+  Informative Prior & 14.81 & 11.19 & 13.15 & 5.92 & 15.17 & 17.47 & 22.33 & -0.02 \\ 
    \hline
 \end{tabular}
 }
@@ -549,19 +549,19 @@ Baseline & 25.37 & 45.21 & -50.00 & 50.00 & -12.39 & 27.93 & -36.11 & 50.00 \\
 Sharpe ratios are a useful tool for assessing overall performance, but they aren't the only tool available. When looking at these ratios, it's worthwhile to keep in mind that a single market outcome is not generalizable and previous market performance is not a guarantee for future performance. More intuitively, this is an issue of simulation. We can't observe more than one stock market, but we can at least generate possible market outcomes given a set of parameters.
 
 % latex table generated in R 3.1.2 by xtable 1.7-4 package
-% Wed Feb 18 18:39:24 2015
+% Sun Feb 22 17:38:05 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{lrrr}
   \hline
  & Return & Risk & P $>$ Market  \\ 
   \hline
-Baseline & 1.15 & 0.22 & 0.19 \\ 
+Baseline & 1.16 & 0.22 & 0.19 \\ 
   Foresight & 1.31 & 0.08 & 0.26 \\ 
-  Unkown Mean & 1.17 & 0.19 & 0.18 \\ 
-  Noninformative Prior & 1.15 & 0.22 & 0.19 \\ 
+  Unkown Mean & 1.18 & 0.20 & 0.19 \\ 
+  Noninformative Prior & 1.16 & 0.22 & 0.19 \\ 
   Informative Prior & 1.64 & 0.20 & 0.99 \\ 
-  Market & 1.38 & 0.15 &  \\ 
+  Market & 1.38 & 0.16 &  \\ 
    \hline
 \end{tabular}
 \caption{Starting from the left, the total expected return after two years in the simulation indexed with $t_0 = 1$. The is followed by the standard deviation of these total returns and the probability that the portfolio will outperform the market after two years. This probability assumes return normality and depends on the means and standard deviations in the table.} 
@@ -592,7 +592,7 @@ We can visualize these relationships with a series of plots. Overlays of the dis
 One question remains about these results: What drives this improved performance? If we're interested in generalizability, it would be worrisome if these results came through the performance of only a single asset. To be blunt, it would be the result of luck, not improved analytic techniques.
 
 % latex table generated in R 3.1.2 by xtable 1.7-4 package
-% Wed Feb 18 18:39:27 2015
+% Sun Feb 22 17:38:06 2015
 \begin{table}[ht]
 \centering
 \scalebox{0.85}{
@@ -600,10 +600,10 @@ One question remains about these results: What drives this improved performance?
   \hline
  & AMZN & FOX & GE & GOOGL & HSY & MMM & MSFT & SHY \\ 
   \hline
-Baseline & 2.28 & -1.52 & 0.79 & -0.86 & -0.49 & 2.99 & -2.20 & -0.00 \\ 
-  Foresight & 0.02 & 0.29 & -0.05 & 0.07 & 0.29 & 0.36 & 0.01 & 0.01 \\ 
-  Unkown Mean & 0.04 & 0.09 & -0.10 & 0.31 & 0.33 & -0.30 & 0.61 & 0.00 \\ 
-  Noninformative Prior & -3.63 & 2.97 & -0.96 & 1.80 & 2.98 & -4.54 & 2.37 & -0.00 \\ 
+Baseline & -3.57 & 1.84 & -0.70 & 2.25 & 3.25 & -2.67 & 0.59 & 0.01 \\ 
+  Foresight & 0.02 & 0.29 & -0.05 & 0.07 & 0.28 & 0.36 & 0.01 & 0.01 \\ 
+  Unkown Mean & -1.25 & 0.79 & -0.21 & 0.67 & 0.92 & -0.95 & 1.03 & 0.00 \\ 
+  Noninformative Prior & -8.18 & 5.11 & -1.60 & 3.49 & 5.32 & -6.46 & 3.17 & 0.16 \\ 
   Informative Prior & 0.29 & 0.19 & 0.12 & 0.16 & 0.05 & 0.12 & 0.07 & -0.00 \\ 
    \hline
 \end{tabular}
@@ -614,7 +614,7 @@ Baseline & 2.28 & -1.52 & 0.79 & -0.86 & -0.49 & 2.99 & -2.20 & -0.00 \\
 
 
 % latex table generated in R 3.1.2 by xtable 1.7-4 package
-% Wed Feb 18 18:39:27 2015
+% Sun Feb 22 17:38:06 2015
 \begin{table}[ht]
 \centering
 \scalebox{0.85}{
@@ -622,11 +622,11 @@ Baseline & 2.28 & -1.52 & 0.79 & -0.86 & -0.49 & 2.99 & -2.20 & -0.00 \\
   \hline
  & AMZN & FOX & GE & GOOGL & HSY & MMM & MSFT & SHY \\ 
   \hline
-Baseline & 276.00 & 175.15 & 63.03 & 130.34 & 132.93 & 286.98 & 202.41 & 0.46 \\ 
-  Foresight & 0.01 & 0.07 & 0.02 & 0.04 & 0.08 & 0.08 & 0.01 & 0.01 \\ 
-  Unkown Mean & 46.95 & 21.90 & 10.25 & 18.01 & 31.67 & 28.05 & 16.96 & 0.46 \\ 
-  Noninformative Prior & 165.66 & 133.97 & 43.01 & 75.87 & 121.32 & 215.83 & 102.79 & 0.50 \\ 
-  Informative Prior & 0.18 & 0.08 & 0.06 & 0.10 & 0.04 & 0.05 & 0.08 & 0.00 \\ 
+Baseline & 167.80 & 99.25 & 37.37 & 75.73 & 147.11 & 158.41 & 55.81 & 0.98 \\ 
+  Foresight & 0.01 & 0.07 & 0.02 & 0.04 & 0.08 & 0.07 & 0.01 & 0.01 \\ 
+  Unkown Mean & 36.66 & 21.12 & 25.82 & 22.18 & 46.07 & 43.33 & 16.85 & 0.94 \\ 
+  Noninformative Prior & 468.29 & 276.64 & 84.40 & 174.50 & 258.39 & 337.47 & 172.06 & 10.49 \\ 
+  Informative Prior & 0.13 & 0.07 & 0.08 & 0.09 & 0.06 & 0.10 & 0.08 & 0.00 \\ 
    \hline
 \end{tabular}
 }
@@ -658,13 +658,13 @@ For people familiar with work in business in Kazakhstan, these recommendations m
         \bibitem{chopra93} Chopra, V. K., \& Ziemba, W. T. (1993). The effect of errors in means, variances, and covariances on optimal portfolio choice. \textit{The journal of portfolio management}, 19(2), 6-11.
         \bibitem{const95} Constantinides, G. M., \& Malliaris, A. G. (1995). Portfolio theory. \emph{Handbooks in operations research and management science}, 9, 1-30.
         \bibitem{gelman13} Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., \& Rubin, D. B. (2013). \textit{Bayesian data analysis}. CRC press.
-        \bibitem{german84} Geman, S., \& Geman, D. (1984). Stochastic relaxation, Gibbs distributions, and the Bayesian restoration of images.\textit{ Pattern Analysis and Machine Intelligence, IEEE Transactions on}, (6), 721-741.
+        \bibitem{geman84} Geman, S., \& Geman, D. (1984). Stochastic relaxation, Gibbs distributions, and the Bayesian restoration of images.\textit{ Pattern Analysis and Machine Intelligence, IEEE Transactions on}, 6, 721-741.
         \bibitem{hoff09} Hoff, P. D. (2009). \textit{A first course in Bayesian statistical methods}. Springer Science \& Business Media.
         \bibitem{kruschke10} Kruschke, J. (2010). \emph{Doing Bayesian data analysis: A tutorial introduction with R}. Academic Press.
         \bibitem{mandel04} Mandelbrot, B., \& Hudson, R. L. (2004). \textit{The (Mis)Behaviour of Markets: A Fractal View of Risk, Ruin, and Reward}. London: Profile Books.
         \bibitem{mark52} Markowitz, H. (1952). Portfolio selection*. \textit{The journal of finance}, 7(1), 77-91. 
     \bibitem{matu13} Matuszak, A. (2013). Building an Optimized Portfolio with R. \textit{Modern Portfolio Theory}. Retrieved on May 5, 2012 from \url{http://economistatlarge.com/portfolio-theory/r-optimized-portfolio}. 
-       \bibitem{rachev04} Ortobelli, S., Rachev, S., Huber, I., \& Biglova, A. (2004). Optimal portfolio selection and Risk management: A comparison between the stable paretian approach and the Gaussian one. In \textit{Handbook of Computational and Numerical Methods in Finance (pp. 197-252)}. Birkhäuser Boston.
+    \bibitem{rachev04} Ortobelli, S., Rachev, S.T. \& Schwartz, E.  (2002). The problem of optimal asset allocation with stable distributed returns. \textit{Stochastic Processes and Functional Analysis: Recent Advances, in Honor of Prof. M.M. Rao}, Marcel Dekker Inc., 238, 295-347.
         \bibitem{rachev08} Rachev, S. T., Hsu, J. S., Bagasheva, B. S., \& Fabozzi, F. J. (2008). \textit{Bayesian methods in finance} (Vol. 153). John Wiley \& Sons.
         \bibitem{ruppert10} Ruppert, D. (2010). \textit{Statistics and data analysis for financial engineering}. Springer.
         \bibitem{zivot13} Zivot, E. (2013). Portfolio theory matrix algebra. Retrieved on May 5, 2012 from \url{http://faculty.washington.edu/ezivot/econ424/portfolioTheoryMatrix.pdf}.

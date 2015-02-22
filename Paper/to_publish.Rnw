@@ -85,7 +85,7 @@ Let’s define a portfolio p as the weighted average over a vector consisting of
     \bm{X} = \left( \bm{X}_1, \dots , \bm{X}_k \right)^T
 \end{flalign}
 
-Assume this vector follows multivariate normal distribution that depends on expected individual asset returns $\bm{\mu}$ and variance $\bm{\Sigma}$.\footnote{This is a simplifying assumption that does not hold in all market conditions. See Mandelbrot (2004).\cite{mandel04} Plenty of research, including that of Markowitz, has shown that an optimal portfolio can still be found after relaxing this assumption. See (Rachev, Ortobelli, and Schwartz, 2004).\cite{rachev04}}
+Assume this vector follows multivariate normal distribution that depends on expected individual asset returns $\bm{\mu}$ and variance $\bm{\Sigma}$.\footnote{This is a simplifying assumption that does not hold in all market conditions. See Mandelbrot (2004).\cite{mandel04} Plenty of research, including that of Markowitz, has shown that an optimal portfolio can still be found after relaxing this assumption. See (Ortobelli, Rachev and Schwartz, 2002).\cite{rachev04}}
 
 \begin{flalign}
     \bm{X} \sim N \left( \bm{\mu}, \bm{\Sigma} \right)
@@ -286,7 +286,7 @@ If, instead, we want to employ a non-informative prior, the process only needs a
 
 \subsection{Gibbs Sampling Algorithms}
 
-A Gibbs sampler is a class of Markov Chain Monte Carlo (MCMC) that utilizes conditional probability distributions (German and German, 1984).\cite{german84} This is an important feature when we have distributions similar to the ones described above. In each of the three sampling cases, we will be working with marginal distributions that are conditioned on other parameters. In the case of the unknown variance, we condition on the other means. When the means and the variances are unknown, we condition the variance on the data and the mean on the variance.
+A Gibbs sampler is a class of Markov Chain Monte Carlo (MCMC) that utilizes conditional probability distributions (Geman and Geman, 1984).\cite{geman84} This is an important feature when we have distributions similar to the ones described above. In each of the three sampling cases, we will be working with marginal distributions that are conditioned on other parameters. In the case of the unknown variance, we condition on the other means. When the means and the variances are unknown, we condition the variance on the data and the mean on the variance.
 
 In general, the Gibbs sampling algorithm is as follows. Suppose that $x$ is a vector of random variables, and $\bm{x} = \left( x_1, \dots , x_d \right)$. The sample will ``update'' iteratively, so that at time $t+1$ you will have $\bm{x}^{(t)} = \left( x_1^{(t)}, \dots , x_d^{(t)} \right)$.
 
@@ -473,13 +473,13 @@ For people familiar with work in business in Kazakhstan, these recommendations m
         \bibitem{chopra93} Chopra, V. K., \& Ziemba, W. T. (1993). The effect of errors in means, variances, and covariances on optimal portfolio choice. \textit{The journal of portfolio management}, 19(2), 6-11.
         \bibitem{const95} Constantinides, G. M., \& Malliaris, A. G. (1995). Portfolio theory. \emph{Handbooks in operations research and management science}, 9, 1-30.
         \bibitem{gelman13} Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., \& Rubin, D. B. (2013). \textit{Bayesian data analysis}. CRC press.
-        \bibitem{german84} Geman, S., \& Geman, D. (1984). Stochastic relaxation, Gibbs distributions, and the Bayesian restoration of images.\textit{ Pattern Analysis and Machine Intelligence, IEEE Transactions on}, (6), 721-741.
+        \bibitem{geman84} Geman, S., \& Geman, D. (1984). Stochastic relaxation, Gibbs distributions, and the Bayesian restoration of images.\textit{ Pattern Analysis and Machine Intelligence, IEEE Transactions on}, 6, 721-741.
         \bibitem{hoff09} Hoff, P. D. (2009). \textit{A first course in Bayesian statistical methods}. Springer Science \& Business Media.
         \bibitem{kruschke10} Kruschke, J. (2010). \emph{Doing Bayesian data analysis: A tutorial introduction with R}. Academic Press.
         \bibitem{mandel04} Mandelbrot, B., \& Hudson, R. L. (2004). \textit{The (Mis)Behaviour of Markets: A Fractal View of Risk, Ruin, and Reward}. London: Profile Books.
         \bibitem{mark52} Markowitz, H. (1952). Portfolio selection*. \textit{The journal of finance}, 7(1), 77-91. 
     \bibitem{matu13} Matuszak, A. (2013). Building an Optimized Portfolio with R. \textit{Modern Portfolio Theory}. Retrieved on May 5, 2012 from \url{http://economistatlarge.com/portfolio-theory/r-optimized-portfolio}. 
-       \bibitem{rachev04} Ortobelli, S., Rachev, S., Huber, I., \& Biglova, A. (2004). Optimal portfolio selection and Risk management: A comparison between the stable paretian approach and the Gaussian one. In \textit{Handbook of Computational and Numerical Methods in Finance (pp. 197-252)}. Birkhäuser Boston.
+    \bibitem{rachev04} Ortobelli, S., Rachev, S.T. \& Schwartz, E.  (2002). The problem of optimal asset allocation with stable distributed returns. \textit{Stochastic Processes and Functional Analysis: Recent Advances, in Honor of Prof. M.M. Rao}, Marcel Dekker Inc., 238, 295-347.
         \bibitem{rachev08} Rachev, S. T., Hsu, J. S., Bagasheva, B. S., \& Fabozzi, F. J. (2008). \textit{Bayesian methods in finance} (Vol. 153). John Wiley \& Sons.
         \bibitem{ruppert10} Ruppert, D. (2010). \textit{Statistics and data analysis for financial engineering}. Springer.
         \bibitem{zivot13} Zivot, E. (2013). Portfolio theory matrix algebra. Retrieved on May 5, 2012 from \url{http://faculty.washington.edu/ezivot/econ424/portfolioTheoryMatrix.pdf}.

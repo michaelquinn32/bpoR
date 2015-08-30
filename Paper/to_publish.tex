@@ -235,7 +235,7 @@ I implemented this problem in \texttt{R} using the \texttt{quadprog} package and
 
 }
 
-\caption[Efficient portfolio frontier and optimal allocation point, using assets described below and the classical method of portfolio optimization]{Efficient portfolio frontier and optimal allocation point, using assets described below and the classical method of portfolio optimization.\label{fig:frontier}}
+\caption[Efficient portfolio frontier and optimal allocation point, using assets described below and the classical method of portfolio optimization]{Efficient portfolio frontier and optimal allocation point, using assets described below and the classical method of portfolio optimization.}\label{fig:frontier}
 \end{figure}
 
 
@@ -394,7 +394,7 @@ In particular, extremely large negative contributions indicate a misallocation. 
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{figure}[H]
-\includegraphics[width=\maxwidth]{figure/sixmonth-1} \caption[Indexed stock returns for the period of 07-18-2011 to 12-27-2011]{Indexed stock returns for the period of 07-18-2011 to 12-27-2011.\label{fig:sixmonth}}
+\includegraphics[width=\maxwidth]{figure/sixmonth-1} \caption[Indexed stock returns for the period of 07-18-2011 to 12-27-2011]{Indexed stock returns for the period of 07-18-2011 to 12-27-2011.}\label{fig:sixmonth}
 \end{figure}
 
 
@@ -419,8 +419,8 @@ Given this environment, our analyst would like to build a new portfolio consisti
 
 The performance of each of these assets is summarized in Table~\ref{tab:returns}, which shows annualized mean returns and annualized standard deviations. It also shows each asset's annualized Sharpe Ratio. The relatively high frequency of Sharpe ratios with a value less than one indicates difficult market conditions. It also tends to be a sign of market turbulence when the risk-free asset has the highest Sharpe ratio. 
 
-% latex table generated in R 3.1.2 by xtable 1.7-4 package
-% Sun Feb 22 17:38:04 2015
+% latex table generated in R 3.1.3 by xtable 1.7-4 package
+% Mon Apr 13 03:52:02 2015
 \begin{table}[ht]
 \centering
 \scalebox{0.85}{
@@ -428,9 +428,9 @@ The performance of each of these assets is summarized in Table~\ref{tab:returns}
   \hline
  & FOX & MSFT & MMM & HSY & GE & GOOGL & AMZN & SHY \\ 
   \hline
-Annualized Return & 34.10 & -0.49 & -25.82 & 22.44 & 5.18 & 23.97 & -33.45 & 0.91 \\ 
-  Annualized St. Dev. & 36.48 & 26.19 & 31.37 & 17.95 & 38.58 & 38.78 & 48.46 & 0.56 \\ 
-  Sharpe Ratio & 0.93 & -0.02 & -0.82 & 1.25 & 0.13 & 0.62 & -0.69 & 1.63 \\ 
+Annualized Return & 34.05 & -0.49 & -25.82 & 22.43 & 5.18 & 23.97 & -33.45 & 0.94 \\ 
+  Annualized St. Dev. & 36.39 & 26.19 & 31.37 & 17.94 & 38.58 & 38.78 & 48.46 & 0.55 \\ 
+  Sharpe Ratio & 0.94 & -0.02 & -0.82 & 1.25 & 0.13 & 0.62 & -0.69 & 1.71 \\ 
    \hline
 \end{tabular}
 }
@@ -457,8 +457,8 @@ The annualized expected returns, standard deviations and Sharpe ratios for each 
 
 \subsection{Bayesian Portfolios}
 
-% latex table generated in R 3.1.2 by xtable 1.7-4 package
-% Sun Feb 22 17:38:04 2015
+% latex table generated in R 3.1.3 by xtable 1.7-4 package
+% Mon Apr 13 03:52:02 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{lrrr}
@@ -466,11 +466,11 @@ The annualized expected returns, standard deviations and Sharpe ratios for each 
  & Expected Return & Risk & Annualized Sharpe \\ 
   \hline
 Market & 19.08 & 10.93 & 174.60 \\ 
-  Basic & 7.47 & 15.77 & 47.40 \\ 
-  Foresight & 15.69 & 5.78 & 271.45 \\ 
-  Unkown Mean & 8.49 & 13.86 & 61.23 \\ 
-  Noninformative Prior & 7.50 & 15.72 & 47.76 \\ 
-  Informative Prior & 32.12 & 14.04 & 228.74 \\ 
+  Basic & 7.49 & 15.75 & 47.58 \\ 
+  Foresight & 15.68 & 5.78 & 271.33 \\ 
+  Unkown Mean & 8.51 & 13.85 & 61.41 \\ 
+  Noninformative Prior & 7.44 & 15.76 & 47.20 \\ 
+  Informative Prior & 32.12 & 14.05 & 228.63 \\ 
    \hline
 \end{tabular}
 \caption{Annualized portfolio return and risk profiles for each of the estimation methods considered. The final three portfolios use Bayesian estimates.} 
@@ -478,8 +478,8 @@ Market & 19.08 & 10.93 & 174.60 \\
 \end{table}
 
 
-% latex table generated in R 3.1.2 by xtable 1.7-4 package
-% Sun Feb 22 17:38:04 2015
+% latex table generated in R 3.1.3 by xtable 1.7-4 package
+% Mon Apr 13 03:52:02 2015
 \begin{table}[ht]
 \centering
 \scalebox{0.85}{
@@ -487,11 +487,11 @@ Market & 19.08 & 10.93 & 174.60 \\
   \hline
  & FOX & MSFT & MMM & HSY & GE & GOOGL & AMZN & SHY \\ 
   \hline
-Baseline & 25.40 & 45.30 & -50.00 & 50.00 & -12.45 & 27.88 & -36.13 & 50.00 \\ 
-  Foresight & 11.52 & 0.95 & 19.47 & 16.69 & -3.09 & 3.86 & 0.60 & 50.00 \\ 
-  Unkown Mean & 19.78 & 40.33 & -37.47 & 46.76 & -15.99 & 26.17 & -29.58 & 50.00 \\ 
-  Noninformative Prior & 25.52 & 44.88 & -49.79 & 50.00 & -12.23 & 27.84 & -36.22 & 50.00 \\ 
-  Informative Prior & 14.81 & 11.19 & 13.15 & 5.92 & 15.17 & 17.47 & 22.33 & -0.02 \\ 
+Baseline & 25.45 & 45.16 & -50.00 & 50.00 & -12.43 & 27.89 & -36.07 & 50.00 \\ 
+  Foresight & 11.48 & 0.94 & 19.48 & 16.72 & -3.10 & 3.86 & 0.61 & 50.00 \\ 
+  Unkown Mean & 19.96 & 40.19 & -37.66 & 46.72 & -15.88 & 26.23 & -29.58 & 50.00 \\ 
+  Noninformative Prior & 25.18 & 45.43 & -50.00 & 50.00 & -12.25 & 27.67 & -36.03 & 50.00 \\ 
+  Informative Prior & 14.79 & 11.20 & 13.12 & 5.91 & 15.15 & 17.49 & 22.37 & -0.02 \\ 
    \hline
 \end{tabular}
 }
@@ -508,7 +508,7 @@ Following the model set out by Gelman(2013), \cite{gelman13} the unknown mean mo
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{figure}[t]
-\includegraphics[width=\maxwidth]{figure/cumret-1} \caption[Cumulative returns for each model portfolio, as tested against asset data from 01-09-2012 to 12-30-2013]{Cumulative returns for each model portfolio, as tested against asset data from 01-09-2012 to 12-30-2013.\label{fig:cumret}}
+\includegraphics[width=\maxwidth]{figure/cumret-1} \caption[Cumulative returns for each model portfolio, as tested against asset data from 01-09-2012 to 12-30-2013]{Cumulative returns for each model portfolio, as tested against asset data from 01-09-2012 to 12-30-2013.}\label{fig:cumret}
 \end{figure}
 
 
@@ -522,8 +522,8 @@ While the final Bayesian model still does not outperform the foresight portfolio
 
 The gains in performance come through avoiding extreme allocations while favoring generally risky assets over the safer risk-free asset. In fact, this is the only portfolio that does not take the maximum allocation possible for the risk-free asset. Although the risk-free asset had the highest Sharpe ratio during the six months of data available to the analyst, this is not the general case. It certainly wasn't true for the following two years (see Table~\ref{tab:test}), and it is not sound financial thinking to favor risk-free assets during bull markets.
 
-% latex table generated in R 3.1.2 by xtable 1.7-4 package
-% Sun Feb 22 17:38:05 2015
+% latex table generated in R 3.1.3 by xtable 1.7-4 package
+% Mon Apr 13 03:52:02 2015
 \begin{table}[ht]
 \centering
 \scalebox{0.85}{
@@ -531,11 +531,11 @@ The gains in performance come through avoiding extreme allocations while favorin
   \hline
  & FOX & MSFT & MMM & HSY & GE & GOOGL & AMZN & SHY \\ 
   \hline
-Baseline & 25.40 & 45.30 & -50.00 & 50.00 & -12.45 & 27.88 & -36.13 & 50.00 \\ 
-  Foresight & 11.52 & 0.95 & 19.47 & 16.69 & -3.09 & 3.86 & 0.60 & 50.00 \\ 
-  Unkown Mean & 19.78 & 40.33 & -37.47 & 46.76 & -15.99 & 26.17 & -29.58 & 50.00 \\ 
-  Noninformative Prior & 25.52 & 44.88 & -49.79 & 50.00 & -12.23 & 27.84 & -36.22 & 50.00 \\ 
-  Informative Prior & 14.81 & 11.19 & 13.15 & 5.92 & 15.17 & 17.47 & 22.33 & -0.02 \\ 
+Baseline & 25.45 & 45.16 & -50.00 & 50.00 & -12.43 & 27.89 & -36.07 & 50.00 \\ 
+  Foresight & 11.48 & 0.94 & 19.48 & 16.72 & -3.10 & 3.86 & 0.61 & 50.00 \\ 
+  Unkown Mean & 19.96 & 40.19 & -37.66 & 46.72 & -15.88 & 26.23 & -29.58 & 50.00 \\ 
+  Noninformative Prior & 25.18 & 45.43 & -50.00 & 50.00 & -12.25 & 27.67 & -36.03 & 50.00 \\ 
+  Informative Prior & 14.79 & 11.20 & 13.12 & 5.91 & 15.15 & 17.49 & 22.37 & -0.02 \\ 
    \hline
 \end{tabular}
 }
@@ -548,20 +548,20 @@ Baseline & 25.40 & 45.30 & -50.00 & 50.00 & -12.45 & 27.88 & -36.13 & 50.00 \\
 
 Sharpe ratios are a useful tool for assessing overall performance, but they aren't the only tool available. When looking at these ratios, it's worthwhile to keep in mind that a single market outcome is not generalizable and previous market performance is not a guarantee for future performance. More intuitively, this is an issue of simulation. We can't observe more than one stock market, but we can at least generate possible market outcomes given a set of parameters.
 
-% latex table generated in R 3.1.2 by xtable 1.7-4 package
-% Sun Feb 22 17:38:05 2015
+% latex table generated in R 3.1.3 by xtable 1.7-4 package
+% Mon Apr 13 03:52:02 2015
 \begin{table}[ht]
 \centering
 \begin{tabular}{lrrr}
   \hline
  & Return & Risk & P $>$ Market  \\ 
   \hline
-Baseline & 1.16 & 0.22 & 0.19 \\ 
+Baseline & 1.15 & 0.22 & 0.19 \\ 
   Foresight & 1.31 & 0.08 & 0.26 \\ 
-  Unkown Mean & 1.18 & 0.20 & 0.19 \\ 
-  Noninformative Prior & 1.16 & 0.22 & 0.19 \\ 
-  Informative Prior & 1.64 & 0.20 & 0.99 \\ 
-  Market & 1.38 & 0.16 &  \\ 
+  Unkown Mean & 1.17 & 0.20 & 0.18 \\ 
+  Noninformative Prior & 1.15 & 0.22 & 0.19 \\ 
+  Informative Prior & 1.64 & 0.19 & 0.99 \\ 
+  Market & 1.38 & 0.15 &  \\ 
    \hline
 \end{tabular}
 \caption{Starting from the left, the total expected return after two years in the simulation indexed with $t_0 = 1$. The is followed by the standard deviation of these total returns and the probability that the portfolio will outperform the market after two years. This probability assumes return normality and depends on the means and standard deviations in the table.} 
@@ -575,7 +575,7 @@ We can visualize these relationships with a series of plots. Overlays of the dis
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{figure}
-\includegraphics[width=\linewidth]{figure/probsdist-1} \caption[A joint density plot for the market index and the Bayesian portfolio with an informative prior]{A joint density plot for the market index and the Bayesian portfolio with an informative prior. Contour lines and annotation for where $Y > X$ are included.\label{fig:probsdist}}
+\includegraphics[width=\linewidth]{figure/probsdist-1} \caption[A joint density plot for the market index and the Bayesian portfolio with an informative prior]{A joint density plot for the market index and the Bayesian portfolio with an informative prior. Contour lines and annotation for where $Y > X$ are included.}\label{fig:probsdist}
 \end{figure}
 
 
@@ -583,7 +583,7 @@ We can visualize these relationships with a series of plots. Overlays of the dis
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{figure}
-\includegraphics[width=\linewidth]{figure/probsdens-1} \caption[An overlay of the two densities for the market index and the Bayesian portfolio with an informative prior]{An overlay of the two densities for the market index and the Bayesian portfolio with an informative prior.\label{fig:probsdens}}
+\includegraphics[width=\linewidth]{figure/probsdens-1} \caption[An overlay of the two densities for the market index and the Bayesian portfolio with an informative prior]{An overlay of the two densities for the market index and the Bayesian portfolio with an informative prior.}\label{fig:probsdens}
 \end{figure}
 
 
@@ -591,8 +591,8 @@ We can visualize these relationships with a series of plots. Overlays of the dis
 
 One question remains about these results: What drives this improved performance? If we're interested in generalizability, it would be worrisome if these results came through the performance of only a single asset. To be blunt, it would be the result of luck, not improved analytic techniques.
 
-% latex table generated in R 3.1.2 by xtable 1.7-4 package
-% Sun Feb 22 17:38:06 2015
+% latex table generated in R 3.1.3 by xtable 1.7-4 package
+% Mon Apr 13 03:52:03 2015
 \begin{table}[ht]
 \centering
 \scalebox{0.85}{
@@ -600,11 +600,11 @@ One question remains about these results: What drives this improved performance?
   \hline
  & AMZN & FOX & GE & GOOGL & HSY & MMM & MSFT & SHY \\ 
   \hline
-Baseline & -3.57 & 1.84 & -0.70 & 2.25 & 3.25 & -2.67 & 0.59 & 0.01 \\ 
+Baseline & -4.44 & 2.66 & -0.76 & 2.36 & 2.32 & -3.57 & 2.39 & 0.05 \\ 
   Foresight & 0.02 & 0.29 & -0.05 & 0.07 & 0.28 & 0.36 & 0.01 & 0.01 \\ 
-  Unkown Mean & -1.25 & 0.79 & -0.21 & 0.67 & 0.92 & -0.95 & 1.03 & 0.00 \\ 
-  Noninformative Prior & -8.18 & 5.11 & -1.60 & 3.49 & 5.32 & -6.46 & 3.17 & 0.16 \\ 
-  Informative Prior & 0.29 & 0.19 & 0.12 & 0.16 & 0.05 & 0.12 & 0.07 & -0.00 \\ 
+  Unkown Mean & -0.75 & 0.77 & -0.30 & 0.36 & 0.90 & -0.72 & 0.76 & -0.01 \\ 
+  Noninformative Prior & -0.12 & 0.29 & -0.03 & 0.14 & 0.35 & -0.06 & 0.45 & -0.01 \\ 
+  Informative Prior & 0.29 & 0.19 & 0.13 & 0.15 & 0.05 & 0.12 & 0.07 & -0.00 \\ 
    \hline
 \end{tabular}
 }
@@ -613,8 +613,8 @@ Baseline & -3.57 & 1.84 & -0.70 & 2.25 & 3.25 & -2.67 & 0.59 & 0.01 \\
 \end{table}
 
 
-% latex table generated in R 3.1.2 by xtable 1.7-4 package
-% Sun Feb 22 17:38:06 2015
+% latex table generated in R 3.1.3 by xtable 1.7-4 package
+% Mon Apr 13 03:52:03 2015
 \begin{table}[ht]
 \centering
 \scalebox{0.85}{
@@ -622,11 +622,11 @@ Baseline & -3.57 & 1.84 & -0.70 & 2.25 & 3.25 & -2.67 & 0.59 & 0.01 \\
   \hline
  & AMZN & FOX & GE & GOOGL & HSY & MMM & MSFT & SHY \\ 
   \hline
-Baseline & 167.80 & 99.25 & 37.37 & 75.73 & 147.11 & 158.41 & 55.81 & 0.98 \\ 
-  Foresight & 0.01 & 0.07 & 0.02 & 0.04 & 0.08 & 0.07 & 0.01 & 0.01 \\ 
-  Unkown Mean & 36.66 & 21.12 & 25.82 & 22.18 & 46.07 & 43.33 & 16.85 & 0.94 \\ 
-  Noninformative Prior & 468.29 & 276.64 & 84.40 & 174.50 & 258.39 & 337.47 & 172.06 & 10.49 \\ 
-  Informative Prior & 0.13 & 0.07 & 0.08 & 0.09 & 0.06 & 0.10 & 0.08 & 0.00 \\ 
+Baseline & 198.28 & 87.02 & 30.34 & 94.87 & 83.75 & 133.55 & 94.72 & 2.53 \\ 
+  Foresight & 0.01 & 0.07 & 0.02 & 0.05 & 0.10 & 0.12 & 0.01 & 0.01 \\ 
+  Unkown Mean & 73.53 & 41.53 & 17.10 & 30.02 & 45.12 & 53.09 & 33.77 & 0.78 \\ 
+  Noninformative Prior & 43.17 & 30.05 & 9.21 & 18.85 & 26.90 & 50.86 & 31.17 & 0.47 \\ 
+  Informative Prior & 0.99 & 0.60 & 0.49 & 0.15 & 0.15 & 0.46 & 0.32 & 0.00 \\ 
    \hline
 \end{tabular}
 }

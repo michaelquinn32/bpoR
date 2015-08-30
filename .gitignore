@@ -1,4 +1,4 @@
-# Latex Compiled Files #
+# Latex Compiled Files 
 ########################
 *-concordance.tex
 .DS_Store
@@ -7,7 +7,13 @@
 *.blg
 *.log
 *.out
+*.gz
 
-# Rstudio file        #
+# Rstudio file        
 #######################
 .Rhistory
+.Rproj.user
+
+# Extra Figures
+#######################
+Paper/figure/

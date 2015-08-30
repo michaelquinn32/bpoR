@@ -13,12 +13,6 @@
 #                   Be sure to set the appropriate working directory
 ##########################################
 
-##########################################
-# Set the appropriate working directory !!!!
-##########################################
-
-setwd('~/Git/Bayesian_Portfolio_Paper/Code')
-
 # Required libraries
 
 library(stockPortfolio) # Stock data
@@ -29,16 +23,18 @@ library(MCMCpack)       # More distributions
 library(mvtnorm)        # Multivariate Normal Distribution
 library(tseries)
 library(zoo)            # Required by tseries
-library(xtable)
+library(xtable)         # For table output
+library(dplyr)          # For data manipulation
+library(magrittr)       # Pipes!
 
-source('final-data.R')
-source('final-opt.R')
-source('final-describe.R')
-source('final-naive.R')
-source('final-foresight.R')
-source('final-bayes-uk-mean.R')
-source('final-bayes-ni.R')
-source('final-bayes-ip.R')
-source('final-compare.R')
-source('final-validate.R')
-source('final-val-plot.R')
+source('code/final-data.R')
+source('code/final-opt.R')
+source('code/final-describe.R')
+source('code/final-naive.R')
+source('code/final-foresight.R')
+source('code/final-bayes-uk-mean.R')
+source('code/final-bayes-ni.R')
+source('code/final-bayes-ip.R')
+source('code/final-compare.R')
+source('code/final-validate.R')
+source('code/final-val-plot.R')

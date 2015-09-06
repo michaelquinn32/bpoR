@@ -17,3 +17,15 @@
 # Extra Figures
 #######################
 Paper/figure/
+
+# Additional Files
+#######################
+Paper/figure/dist-pair-inform-1.pdf
+Paper/figure/dist-pair-inform-2.pdf
+Paper/figure/frontier-1.pdf
+Paper/figure/results-1.pdf
+Paper/figure/sixmonth-1.pdf
+
+# For journal Files
+#######################
+Publication/

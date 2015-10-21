@@ -24,6 +24,7 @@ library(mvtnorm)        # Multivariate Normal Distribution
 library(tseries)
 library(zoo)            # Required by tseries
 library(xtable)         # For table output
+library(plyr)           # For the function "each"
 library(dplyr)          # For data manipulation
 library(magrittr)       # Pipes!
 

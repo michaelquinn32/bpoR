@@ -14,14 +14,15 @@
 # Descriptive Stats last six months and test portfolio
 end <- 1
 start <- end + 23
-funs <- list(Means = mean, StDev = sd, Total = sum, N = length)
 
 ss <- port.hist %>% 
     extract2("R") %>% 
     extract(start:end, ) 
 
-c_summ_hist <- lapply(X = funs, FUN = function(f) apply(ss, 2, f)) %>% attach()
-c_summ_new <- lapply(X = funs, FUN = function(f) apply(port.test$R, 2, f)) 
+funs <- c("Asset", "Means", "StDev", "Total", "N")
+c_summ_hist <- adply(ss, 2, each(mean, sd, sum, length)) %>% setNames(funs)
+attach(c_summ_hist)
+c_summ_new <- port.test$R %>% adply(2, each(mean, sd, sum, length)) %>% setNames(funs)
 Cov <- cov(ss)
 Cov.New <- cov(port.test$R)
 
@@ -56,13 +57,13 @@ print(p.returns)
 stocks.table <- data.frame("Annualized Return" =  52 * c_summ_hist$Means * 100, 
     "Annualized St. Dev." = sqrt(52) * c_summ_hist$StDev * 100, 
     "Sharpe Ratio" = 52 * c_summ_hist$Means /(sqrt(52)* c_summ_hist$StDev),
-    check.names = FALSE) %>% 
-    t()
+    check.names = FALSE, row.names = c_summ_hist$Asset) %>% 
+    t
 
 # Basic Stats, Test port
 # Looking forward to get the means
 test.table = data.frame("Annualized Return" =  52 * c_summ_new$Means * 100, 
     "Annualized St. Dev." = sqrt(52) * c_summ_new$StDev * 100,
     "Sharpe Ratio" = 52 * c_summ_new$Means /(sqrt(52)* c_summ_new$StDev),
-    check.names = FALSE) %>% 
-    t()
+    check.names = FALSE, row.names = c_summ_new$Asset) %>% 
+    t

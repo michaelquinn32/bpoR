@@ -17,7 +17,8 @@ eff <- make.port(Means, Cov,.5,-.5)
 eff.optimal.point <- subset(eff, sharpe == max(sharpe))
 
 # Efficient Frontier and performance
-p.eff.naive <- eff.plot(eff, eff.optimal.point); print(p.eff.naive)
+p.eff.naive <- eff.plot(eff, eff.optimal.point)
+print(p.eff.naive)
 perf <- port.performance(eff.optimal.point)
 
 # Assessing performance

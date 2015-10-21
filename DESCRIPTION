@@ -1,0 +1,16 @@
+Package: bpoR
+Title: Bayesian Portfolio Optimization in R
+Version: 0.1.0.1
+Authors@R: c(person("Michael", "Quinn", , "msquinn2@illinois.edu", c("aut", "cre")))
+Description: An implementation of several Bayesian estimators for the parameters in
+    a classic Markowitz portfolio optimization algorithm. A Gibbs sampler is used to
+    find the Bayesian estimates.
+License: GPL-3 | file LICENSE
+LazyData: true
+Imports:
+    magrittr (>= 1.5),
+    dplyr (>= 0.4)
+Suggests:
+LinkingTo:
+URL: https://github.com/michaelquinn32/bpoR
+BugReports: https://github.com/michaelquinn32/bpoR/issues

@@ -13,16 +13,17 @@
 ##########################################
 
 # Looking forward to get the means
-New.Means=apply(port.test$R,2,mean)
-New.Cov = cov(port.test$R)
-new.eff = make.port(New.Means, New.Cov,.5,-.5)
-new.eff.optimal.point = new.eff[new.eff$sharpe==max(new.eff$sharpe),]
+New.Means <- apply(port.test$R,2,mean)
+New.Cov <- cov(port.test$R)
+new.eff <- make.port(New.Means, New.Cov,.5,-.5)
+new.eff.optimal.point <- subset(new.eff, sharpe == max(sharpe))
 
-nperf = port.performance(new.eff.optimal.point)
-p.foresight = eff.plot(eff, new.eff.optimal.point); print(p.foresight)
+nperf <- port.performance(new.eff.optimal.point)
+p.foresight <- eff.plot(eff, new.eff.optimal.point)
+print(p.foresight)
 
 # Summarizing for final tables
-Market = c(52*mean(baseline.test$R), sqrt(52)*sd(baseline.test$R), 
+Market <- c(52*mean(baseline.test$R), sqrt(52)*sd(baseline.test$R), 
            52*mean(baseline.test$R)/(sqrt(52)*sd(baseline.test$R)))
 
-Foresight = port.summary(nperf)
+Foresight <- port.summary(nperf)

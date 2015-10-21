@@ -51,7 +51,7 @@ make.port <- function(means,
     funs <- list("Std.Dev" = function(x) sqrt(x %*%  covariance %*% x),
                  "Exp.Return" = function(x) x %*% means,
                  "sharpe" = function(x) x %*% means / 
-                     sqrt(x %*%  covariance %*% x))
+                     sqrt(x %*% covariance %*% x))
     
     # Apply to the solutions list
     summ <- lapply(funs, function(f) lapply(sols, 

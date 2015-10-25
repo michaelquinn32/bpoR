@@ -1,4 +1,4 @@
-# Bayesian Estimates of the Parameters for Portfolio Optimization
+# Bayesian Portfolio Optimization in R
 
 ## Project Description
 
